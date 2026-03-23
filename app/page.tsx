@@ -1,6 +1,10 @@
 'use client'
 
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext"
+import { useRouter } from "next/navigation"
+import { useEffect } from "react"
+
 
 export default function Home() {
 
@@ -8,6 +12,15 @@ export default function Home() {
   const [response,setResponse] = useState("");
   const [loading,setLoading] = useState(false);
   const [error,setError] = useState("");
+
+  const { user } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if(!user){
+      router.push("/login")
+    }
+  }, [user])
 
   const generateDescription = async () => {
 
@@ -41,6 +54,10 @@ export default function Home() {
 
     setLoading(false);
   };
+
+  if(!user){
+  return <p className="text-center mt-10">Checking authentication...</p>
+}
 
   return (
 

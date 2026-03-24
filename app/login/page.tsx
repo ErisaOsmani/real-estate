@@ -41,54 +41,54 @@ export default function Login(){
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+  <main className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black flex items-center justify-center p-4">
 
-      <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md">
+    <div className="bg-white/10 backdrop-blur-lg shadow-2xl rounded-2xl p-8 w-full max-w-md border border-white/20">
 
-        <h1 className="text-3xl font-bold text-center text-gray-900 mb-2">
-          Welcome Back
-        </h1>
+      <h1 className="text-3xl font-bold text-center text-white mb-2">
+        🌙 Welcome Back
+      </h1>
 
-        <p className="text-center text-gray-500 mb-6">
-          Login to your account to continue
+      <p className="text-center text-gray-300 mb-6">
+        Login to your account to continue
+      </p>
+
+      <input
+        className="w-full border border-white/20 rounded-lg p-3 mb-4 text-white bg-white/10 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+        placeholder="Email address"
+        onChange={(e)=>setEmail(e.target.value)}
+      />
+
+      <input
+        className="w-full border border-white/20 rounded-lg p-3 mb-4 text-white bg-white/10 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+        type="password"
+        placeholder="Password"
+        onChange={(e)=>setPassword(e.target.value)}
+      />
+
+      <button
+        onClick={handleLogin}
+        disabled={loading}
+        className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold py-3 rounded-lg transition shadow-lg"
+      >
+        {loading ? "Logging in..." : "Login"}
+      </button>
+
+      {error && (
+        <p className="text-red-400 mt-4 text-center">
+          {error}
         </p>
+      )}
 
-        <input
-          className="w-full border border-gray-300 rounded-lg p-3 mb-4 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Email address"
-          onChange={(e)=>setEmail(e.target.value)}
-        />
+      <p className="text-center text-sm text-gray-400 mt-4">
+        Don’t have an account?{" "}
+        <a href="/signup" className="text-purple-400 hover:underline">
+          Sign up
+        </a>
+      </p>
 
-        <input
-          className="w-full border border-gray-300 rounded-lg p-3 mb-4 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          type="password"
-          placeholder="Password"
-          onChange={(e)=>setPassword(e.target.value)}
-        />
+    </div>
 
-        <button
-          onClick={handleLogin}
-          disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition"
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
-
-        {error && (
-          <p className="text-red-500 mt-4 text-center">
-            {error}
-          </p>
-        )}
-
-        <p className="text-center text-sm text-gray-500 mt-4">
-          Don’t have an account?{" "}
-          <a href="/signup" className="text-blue-600 hover:underline">
-            Sign up
-          </a>
-        </p>
-
-      </div>
-
-    </main>
-  )
+  </main>
+)
 }

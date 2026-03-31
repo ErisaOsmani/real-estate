@@ -144,7 +144,7 @@ export default function Home() {
         {/* INPUT */}
         <textarea
           className="w-full border border-white/20 rounded-lg p-3 h-32 text-white bg-white/10 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          placeholder="Shkruaj detajet e pronës (location, size, price, features...)"
+          placeholder="Write property details (location, size, price...)"
           value={input}
           onChange={(e)=>setInput(e.target.value)}
         />

@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Real Estate AI Application
 
-## Getting Started
+## Live URL
 
-First, run the development server:
+https://real-estate-kappa-orcin.vercel.app
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Project Description
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This project is a full-stack web application that allows users to generate professional real estate property descriptions using AI. The application also includes user authentication and database integration, enabling users to save and manage their own properties securely.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+* AI-powered property description generator
+* User authentication (Sign Up / Login)
+* Protected routes (only logged-in users can access the dashboard)
+* Save generated properties to database
+* View only personal data (user-specific properties)
+* Logout functionality
+* Persistent session (user stays logged in after refresh)
 
-## Learn More
+## Technologies Used
 
-To learn more about Next.js, take a look at the following resources:
+* Next.js (React Framework)
+* Supabase (Authentication & Database)
+* Groq API (AI text generation)
+* Tailwind CSS (Styling)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## How It Works
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. User creates an account or logs in
+2. User enters property details
+3. AI generates a professional description
+4. User can save the property
+5. Saved properties are stored in Supabase and linked to the logged-in user
 
-## Deploy on Vercel
+## Database & Security
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+* A table called `properties` is created in Supabase
+* Each record includes:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+  * id
+  * user_id
+  * title
+  * description
+* Row Level Security (RLS) is enabled
+* Policies ensure that:
+
+  * Users can only see their own data
+  * Users can only insert their own records
+
+## Author
+
+Erisa Osmani

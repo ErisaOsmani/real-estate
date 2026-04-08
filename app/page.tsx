@@ -44,9 +44,14 @@ export default function Home() {
   const generateDescription = async () => {
 
     if(!input.trim()){
-  setError("Please enter property details")
-  return
-}
+      setError("Please enter property details")
+      return
+    }
+    if(input.length > 500){
+      setError("Input is too long (max 500 characters)")
+      return
+    }
+
 
     setLoading(true);
     setError("");

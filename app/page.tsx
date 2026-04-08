@@ -198,6 +198,9 @@ export default function Home() {
           <h2 className="text-white font-semibold mb-2">
             📂 Your Properties
           </h2>
+          {properties.length === 0 && (
+             <p className="text-gray-400 text-sm">No properties saved yet</p>
+          )}
 
           {properties.map((item)=>(
             <div key={item.id} className="bg-white/10 border border-white/20 p-3 rounded-lg mt-3">

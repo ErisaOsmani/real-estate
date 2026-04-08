@@ -85,10 +85,17 @@ export default function Home() {
   // 💾 SAVE DATA (CREATE)
   const saveProperty = async () => {
 
-    if(!response){
+  if(!response){
     setError("Please generate description first")
     return
-}
+  }
+
+  const exists = properties.some(p => p.description === response)
+
+  if(exists){
+    setError("This property is already saved")
+    return
+  }
 
     const { data: { user } } = await supabase.auth.getUser()
 

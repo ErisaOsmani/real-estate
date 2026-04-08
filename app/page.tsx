@@ -76,8 +76,8 @@ export default function Home() {
       setResponse(data.reply);
 
     } catch(err:any){
-      setError(err.message);
-    }
+    setError("Network error or AI failed. Please try again.")
+  }
 
     setLoading(false);
   };
@@ -86,9 +86,9 @@ export default function Home() {
   const saveProperty = async () => {
 
     if(!response){
-      alert("Generate description first!")
-      return
-    }
+    setError("Please generate description first")
+    return
+  }
 
     const { data: { user } } = await supabase.auth.getUser()
 

@@ -76,8 +76,12 @@ export default function Home() {
       setResponse(data.reply);
 
     } catch(err:any){
-    setError("Network error or AI failed. Please try again.")
+  if(err.message.includes("Failed to fetch")){
+    setError("No internet connection")
+  } else {
+    setError("Something went wrong. Try again.")
   }
+}
 
     setLoading(false);
   };

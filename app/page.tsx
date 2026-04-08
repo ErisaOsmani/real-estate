@@ -43,7 +43,10 @@ export default function Home() {
   // 🤖 AI GENERATE
   const generateDescription = async () => {
 
-    if(!input.trim()) return;
+    if(!input.trim()){
+  setError("Please enter property details")
+  return
+}
 
     setLoading(true);
     setError("");

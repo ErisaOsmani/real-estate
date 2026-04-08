@@ -88,7 +88,7 @@ export default function Home() {
     if(!response){
     setError("Please generate description first")
     return
-  }
+}
 
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -161,7 +161,7 @@ export default function Home() {
         <button
           onClick={generateDescription}
           disabled={loading}
-          className="w-full mt-4 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold py-3 rounded-lg transition shadow-lg"
+          className="w-full mt-4 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold py-3 rounded-lg transition shadow-lg disabled:opacity-50"
         >
           {loading ? "Generating..." : "Generate Description"}
         </button>

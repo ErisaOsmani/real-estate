@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
+import TextInput from "@/app/components/TextInput"
 
 export default function Login(){
 
@@ -14,9 +15,6 @@ export default function Login(){
   const [loading,setLoading] = useState(false)
 
   const handleLogin = async () => {
-
-    console.log("EMAIL:", email)
-    console.log("PASSWORD:", password)
 
     if(!email || !password){
       setError("Please fill all fields")
@@ -32,7 +30,7 @@ export default function Login(){
     })
 
     if(error){
-      setError(error.message)
+      setError(error.message || "Unable to sign in. Please try again.")
     } else {
       router.push("/")
     }
@@ -53,23 +51,25 @@ export default function Login(){
         Login to your account to continue
       </p>
 
-      <input
-        className="w-full border border-white/20 rounded-lg p-3 mb-4 text-white bg-white/10 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+      <TextInput
         placeholder="Email address"
+        value={email}
         onChange={(e)=>setEmail(e.target.value)}
+        disabled={loading}
       />
 
-      <input
-        className="w-full border border-white/20 rounded-lg p-3 mb-4 text-white bg-white/10 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+      <TextInput
         type="password"
         placeholder="Password"
+        value={password}
         onChange={(e)=>setPassword(e.target.value)}
+        disabled={loading}
       />
 
       <button
         onClick={handleLogin}
         disabled={loading}
-        className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold py-3 rounded-lg transition shadow-lg"
+        className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold py-3 rounded-lg transition shadow-lg disabled:opacity-60"
       >
         {loading ? "Logging in..." : "Login"}
       </button>

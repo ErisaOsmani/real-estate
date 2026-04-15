@@ -1,41 +1,43 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from "react"
-import { supabase } from "@/lib/supabase"
 import { Session, User } from "@supabase/supabase-js"
+import { supabase } from "@/lib/supabase"
 
 interface AuthContextType {
   user: User | null
+  loading: boolean
 }
 
-const AuthContext = createContext<AuthContextType>({ user: null })
+const AuthContext = createContext<AuthContextType>({ user: null, loading: true })
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Funksion async për të marrë session-in aktual
     const getSession = async () => {
       const { data } = await supabase.auth.getSession()
       setUser(data.session?.user ?? null)
+      setLoading(false)
     }
 
     getSession()
 
-    // Listen për ndryshimet e autentifikimit
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session: Session | null) => {
         setUser(session?.user ?? null)
+        setLoading(false)
       }
     )
 
     return () => {
-      listener?.subscription.unsubscribe() 
+      listener?.subscription.unsubscribe()
     }
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user }}>
+    <AuthContext.Provider value={{ user, loading }}>
       {children}
     </AuthContext.Provider>
   )

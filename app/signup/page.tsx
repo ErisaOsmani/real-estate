@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { supabase } from "@/lib/supabase"
+import TextInput from "@/app/components/TextInput"
 
 export default function Signup(){
 
@@ -27,6 +28,11 @@ export default function Signup(){
       return
     }
 
+    if(!name){
+      setError("Please enter your name")
+      return
+    }
+
     setLoading(true)
 
     const { error } = await supabase.auth.signUp({
@@ -38,15 +44,11 @@ export default function Signup(){
         }
       }
     })
-    if(!name){
-      setError("Please enter your name")
-      return
-    }
 
     if(error){
-      setError(error.message)
+      setError(error.message || "Could not create account. Please try again.")
     } else {
-      setSuccess("Account created successfully!")
+      setSuccess("Account created successfully! Check your email to confirm.")
     }
 
     setLoading(false)
@@ -65,28 +67,31 @@ export default function Signup(){
         Sign up to start generating AI property descriptions
       </p>
 
-      <input
-        className="w-full border border-white/20 rounded-lg p-3 mb-4 text-white bg-white/10 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+      <TextInput
         placeholder="Email address"
+        value={email}
         onChange={(e)=>setEmail(e.target.value)}
+        disabled={loading}
       />
 
-      <input
-        className="w-full border border-white/20 rounded-lg p-3 mb-4 text-white bg-white/10 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+      <TextInput
         type="password"
         placeholder="Password"
+        value={password}
         onChange={(e)=>setPassword(e.target.value)}
+        disabled={loading}
       />
-      <input
-        className="w-full border border-white/20 rounded-lg p-3 mb-4 text-white bg-white/10 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+      <TextInput
         placeholder="Full name"
+        value={name}
         onChange={(e)=>setName(e.target.value)}
+        disabled={loading}
       />
 
       <button
         onClick={handleSignup}
         disabled={loading}
-        className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold py-3 rounded-lg transition shadow-lg"
+        className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold py-3 rounded-lg transition shadow-lg disabled:opacity-60"
       >
         {loading ? "Creating account..." : "Sign Up"}
       </button>

@@ -4,18 +4,30 @@ import React from "react"
 
 interface TextInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string
+  hint?: string
 }
 
-export default function TextInput({ label, ...props }: TextInputProps) {
-  const className =
-    "w-full border border-white/20 rounded-lg p-3 mb-4 text-white bg-white/10 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+export default function TextInput({ label, hint, className = "", ...props }: TextInputProps) {
+  const inputClassName = [
+    "w-full rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3 text-white",
+    "placeholder:text-white/30 focus:border-amber-200/35 focus:outline-none",
+    "focus:bg-white/[0.08] transition",
+    className,
+  ].join(" ")
 
   return (
-    <div>
+    <div className="space-y-2">
       {label && (
-        <label className="block text-sm text-gray-300 mb-1">{label}</label>
+        <label className="block text-xs font-medium uppercase tracking-[0.24em] text-white/55">
+          {label}
+        </label>
       )}
-      <input {...props} className={className} />
+      <input {...props} className={inputClassName} />
+      {hint && (
+        <p className="text-xs text-white/40">
+          {hint}
+        </p>
+      )}
     </div>
   )
 }

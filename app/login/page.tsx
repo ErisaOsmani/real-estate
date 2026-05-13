@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import TextInput from "@/app/components/TextInput"
+import { getDashboardPath } from "@/lib/roles"
 import { supabase } from "@/lib/supabase"
 
 export default function Login() {
@@ -23,7 +24,7 @@ export default function Login() {
     setError("")
     setLoading(true)
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
@@ -31,7 +32,7 @@ export default function Login() {
     if (error) {
       setError(error.message || "Nuk mund të kyçesh. Provo përsëri.")
     } else {
-      router.push("/")
+      router.push(getDashboardPath(data.user))
     }
 
     setLoading(false)
@@ -46,28 +47,28 @@ export default function Login() {
               REAL ESTATE AI
             </p>
             <h1 className="font-display mt-5 text-5xl leading-[0.95] text-white sm:text-6xl">
-              Mirë se u ktheve në studion e pronave.
+              Mirë se u ktheve në Real Estate AI.
             </h1>
             <p className="mt-5 max-w-xl text-base leading-7 text-white/62">
-              Kyçu për të gjeneruar përshkrime profesionale, për të menaxhuar draftet e ruajtura dhe për ta mbajtur prezantimin të rregullt.
+              Admini menaxhon shpalljet e pronave, ndërsa klienti kërkon banesë për shitje ose qira.
             </p>
           </div>
 
           <div className="mt-10 grid gap-4 sm:grid-cols-3">
             <div className="rounded-[1.5rem] border border-white/8 bg-white/[0.05] p-4">
               <p className="text-xs uppercase tracking-[0.24em] text-white/42">Shpejtësi</p>
-              <p className="mt-3 text-2xl text-white">Tekst i shpejtë</p>
-              <p className="mt-2 text-sm text-white/55">Nga detajet bazë te përshkrimi i gatshëm për klient.</p>
+              <p className="mt-3 text-2xl text-white">Dy role</p>
+              <p className="mt-2 text-sm text-white/55">Admin/Pronar dhe Klient/Banor me rrugë të ndara.</p>
             </div>
             <div className="rounded-[1.5rem] border border-white/8 bg-white/[0.05] p-4">
               <p className="text-xs uppercase tracking-[0.24em] text-white/42">Cilësi</p>
-              <p className="mt-3 text-2xl text-white">Ton profesional</p>
-              <p className="mt-2 text-sm text-white/55">Përshkrime që duken të kujdesshme dhe bindëse.</p>
+              <p className="mt-3 text-2xl text-white">Marketplace</p>
+              <p className="mt-2 text-sm text-white/55">Prona për shitje dhe qira në një vend.</p>
             </div>
             <div className="rounded-[1.5rem] border border-white/8 bg-white/[0.05] p-4">
               <p className="text-xs uppercase tracking-[0.24em] text-white/42">Arkiv</p>
-              <p className="mt-3 text-2xl text-white">Drafte të ruajtura</p>
-              <p className="mt-2 text-sm text-white/55">Mbaji përshkrimet më të mira në një vend.</p>
+              <p className="mt-3 text-2xl text-white">AI sipas rolit</p>
+              <p className="mt-2 text-sm text-white/55">Admini krijon shpallje, klienti merr sugjerime.</p>
             </div>
           </div>
         </div>
@@ -81,7 +82,7 @@ export default function Login() {
               Hyr në llogarinë tënde
             </h2>
             <p className="mt-3 text-sm leading-6 text-white/58">
-              Vazhdo aty ku e ke lënë dhe hape hapësirën private të pronave.
+              Pas kyçjes, admini shkon te paneli i pronarit, klienti te lista e pronave.
             </p>
 
             <div className="mt-8 space-y-5">

@@ -7,6 +7,7 @@ export interface Property {
   user_id: string
   title: string
   description: string
+  created_at?: string
 }
 
 interface GeneratePropertyResponse {
@@ -39,6 +40,19 @@ export const getUserProperties = async (userId: string): Promise<Property[]> => 
     .from("properties")
     .select("*")
     .eq("user_id", userId)
+    .order("id", { ascending: false })
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return data ?? []
+}
+
+export const getAdminProperties = async (): Promise<Property[]> => {
+  const { data, error } = await supabase
+    .from("properties")
+    .select("*")
     .order("id", { ascending: false })
 
   if (error) {

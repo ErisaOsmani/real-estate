@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useState } from "react"
 import TextInput from "@/app/components/TextInput"
+import { roleLabels, UserRole } from "@/lib/roles"
 import { supabase } from "@/lib/supabase"
 
 export default function Signup() {
@@ -12,6 +13,7 @@ export default function Signup() {
   const [success, setSuccess] = useState("")
   const [loading, setLoading] = useState(false)
   const [name, setName] = useState("")
+  const [role, setRole] = useState<UserRole>("client")
 
   const handleSignup = async () => {
     setError("")
@@ -40,6 +42,7 @@ export default function Signup() {
       options: {
         data: {
           full_name: name,
+          role,
         },
       },
     })
@@ -62,13 +65,41 @@ export default function Signup() {
               Regjistrimi
             </p>
             <h1 className="font-display mt-3 text-4xl text-white sm:text-5xl">
-              Krijo llogarinë e studios
+              Krijo llogarinë tënde
             </h1>
             <p className="mt-3 text-sm leading-6 text-white/58">
-              Fillo të krijosh përshkrime profesionale të pronave dhe ruaji në hapësirën tënde private.
+              Zgjidh rolin që të hapet eksperienca e duhur: panel pronari ose kërkim banese.
             </p>
 
             <div className="mt-8 space-y-5">
+              <div>
+                <label className="block text-xs font-medium uppercase tracking-[0.24em] text-white/55">
+                  Roli
+                </label>
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  {(["client", "admin"] as UserRole[]).map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => setRole(option)}
+                      disabled={loading}
+                      className={`rounded-2xl border p-4 text-left transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                        role === option
+                          ? "border-amber-200/45 bg-amber-200 text-slate-950"
+                          : "border-white/10 bg-white/[0.05] text-white hover:bg-white/[0.08]"
+                      }`}
+                    >
+                      <span className="block text-sm font-semibold">{roleLabels[option]}</span>
+                      <span className={`mt-2 block text-xs leading-5 ${role === option ? "text-slate-700" : "text-white/52"}`}>
+                        {option === "admin"
+                          ? "Regjistro dhe shpall prona për shitje ose qira."
+                          : "Kërko, filtro dhe ruaj pronat që të përshtaten."}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <TextInput
                 label="Emri i plotë"
                 placeholder="Emri dhe mbiemri"
@@ -135,33 +166,33 @@ export default function Signup() {
               HAPËSIRË PRIVATE
             </p>
             <h2 className="font-display mt-5 text-5xl leading-[0.95] text-white sm:text-6xl">
-              Krijo përshtypje më të fortë për çdo pronë.
+              Një hyrje, dy eksperienca të qarta.
             </h2>
             <p className="mt-5 max-w-xl text-base leading-7 text-white/62">
-              Një rrjedhë më e pastër pune për agjentë, marketerë dhe ekipe që duan tekst më të shpejtë pa humbur tonin profesional.
+              Admini shpall pronat e veta; klienti i shfleton, i filtron dhe më vonë merr ndihmë nga AI për zgjedhjen më të mirë.
             </p>
           </div>
 
           <div className="mt-10 space-y-4">
             <div className="rounded-[1.5rem] border border-white/8 bg-white/[0.05] p-5">
               <p className="text-xs uppercase tracking-[0.24em] text-white/42">01</p>
-              <h3 className="mt-3 text-xl text-white">Përshkruaj pronën</h3>
+              <h3 className="mt-3 text-xl text-white">Admin/Pronar</h3>
               <p className="mt-2 text-sm leading-6 text-white/55">
-                Shto sipërfaqen, lokacionin, çmimin, përfundimet dhe veçoritë kryesore.
+                Regjistron prona, zgjedh shitje/qira dhe i publikon për klientët.
               </p>
             </div>
             <div className="rounded-[1.5rem] border border-white/8 bg-white/[0.05] p-5">
               <p className="text-xs uppercase tracking-[0.24em] text-white/42">02</p>
-              <h3 className="mt-3 text-xl text-white">Gjenero tekstin prezantues</h3>
+              <h3 className="mt-3 text-xl text-white">Klient/Banor</h3>
               <p className="mt-2 text-sm leading-6 text-white/55">
-                AI i kthen shënimet e thjeshta në përshkrim të qartë, bindës dhe profesional.
+                Sheh pronat aktive dhe i sorton sipas nevojës: shitje ose qira.
               </p>
             </div>
             <div className="rounded-[1.5rem] border border-white/8 bg-white/[0.05] p-5">
               <p className="text-xs uppercase tracking-[0.24em] text-white/42">03</p>
-              <h3 className="mt-3 text-xl text-white">Ruaj dhe ripërdor draftet</h3>
+              <h3 className="mt-3 text-xl text-white">AI me kontekst</h3>
               <p className="mt-2 text-sm leading-6 text-white/55">
-                Mbaj një arkiv me përshkrime të gatshme për klientë dhe kampanja të ardhshme.
+                Adminit i ndihmon me shpallje; klientit i ndihmon me rekomandime.
               </p>
             </div>
           </div>

@@ -1,26 +1,54 @@
 # Real Estate AI
 
-Real Estate AI është aplikacion web me Next.js që ndihmon agjentët e patundshmërive të gjenerojnë përshkrime profesionale të pronave në shqip, t'i ruajnë draftet dhe t'i menaxhojnë në një arkiv privat.
+Real Estate AI është marketplace për prona me dy role të qarta: **Admin/Pronar** dhe **Klient/Banor**. Admini regjistron dhe shpall pronat e veta për shitje ose qira; klienti i shfleton, i filtron dhe në sprintet e ardhshme do të marrë ndihmë nga AI për të zgjedhur pronën më të përshtatshme.
 
-## Çfarë bën aplikacioni
+## Java 1: Struktura e produktit
 
-- Përdoruesit mund të regjistrohen, të kyçen dhe të kenë hapësirë private pune.
-- Përdoruesi shkruan detajet e pronës ose përdor shembullin demo.
-- Mund të zgjidhet toni i përshkrimit: profesional, luksoz, familjar ose i shkurtër.
-- AI gjeneron përshkrim të pastër në shqip.
-- Rezultati mund të kopjohet dhe të ruhet në Supabase.
-- Rezultati mund të eksportohet si file `.txt`.
-- Formulari mund të pastrohet shpejt për të nisur një përshkrim të ri.
-- Arkivi shfaq pronat e ruajtura, lejon kërkim të shpejtë, ripërdorim dhe fshirje të draftit.
-- Aplikacioni kontrollon input-in, shfaq gjendje loading, sukses dhe gabime të qarta.
+Në këtë sprint u vendos baza e produktit:
 
-## Kujt i shërben
+- Rolet kryesore: `admin` dhe `client`.
+- Regjistrimi ka zgjedhje roli: `Admin/Pronar` ose `Klient/Banor`.
+- Login bën redirect sipas rolit:
+  - admini shkon te `/admin`
+  - klienti shkon te `/properties`
+- Root route `/` e dërgon përdoruesin te dashboard-i i duhur.
+- U hapën faqet kryesore të strukturës:
+  - `/login`
+  - `/signup`
+  - `/admin`
+  - `/admin/properties`
+  - `/properties`
+  - `/properties/[id]`
+  - `/favorites`
+- U dokumentua schema e planifikuar në [docs/database-schema.md](docs/database-schema.md).
 
-Ky projekt është i përshtatshëm për:
+## Rolet
 
-- Agjentë të patundshmërive.
-- Marketerë të pronave.
-- Agjenci të vogla që duan përshkrime më të shpejta dhe më profesionale.
+**Admin/Pronar**
+
+- Regjistron prona për shitje ose qira.
+- Menaxhon pronat e veta.
+- Publikon ose çpublikon shpallje.
+- Në sprintet e ardhshme përdor AI për tituj, përshkrime dhe materiale marketingu.
+
+**Klient/Banor**
+
+- Shfleton pronat aktive.
+- Filtron pronat sipas shitje/qira.
+- Hap detajet e pronës.
+- Ruan favorite.
+- Në sprintet e ardhshme përdor AI për kërkim natyral, krahasime dhe rekomandime.
+
+## Database Schema
+
+Tabelat e planifikuara:
+
+- `profiles`
+- `properties`
+- `favorites`
+- `inquiries`
+
+Detajet janë te [docs/database-schema.md](docs/database-schema.md).
 
 ## Teknologjitë
 
@@ -28,7 +56,7 @@ Ky projekt është i përshtatshëm për:
 - React 19
 - Tailwind CSS 4
 - Supabase Auth dhe Database
-- Groq API për gjenerim të tekstit me AI
+- Groq API për veçoritë AI
 
 ## Konfigurimi lokal
 
@@ -38,12 +66,13 @@ Ky projekt është i përshtatshëm për:
 npm install
 ```
 
-2. Krijo `.env.local` me çelësat e nevojshëm:
+2. Krijo `.env.local`:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 GROQ_API_KEY=your_groq_api_key
+NEXT_PUBLIC_ADMIN_EMAILS=admin@realestate.test
 ```
 
 3. Starto serverin lokal:
@@ -52,35 +81,20 @@ GROQ_API_KEY=your_groq_api_key
 npm run dev
 ```
 
-4. Hape aplikacionin në:
+4. Hape aplikacionin:
 
 ```text
 http://localhost:3000
 ```
 
-## Rrjedha e demos
+## Demo Accounts
 
-1. Kyçu me llogarinë demo.
-2. Kliko `Përdor shembullin demo`.
-3. Zgjidh tonin e përshkrimit.
-4. Kliko `Gjenero përshkrimin`.
-5. Kopjo tekstin ose eksportoje si `.txt`.
-6. Ruaje pronën në arkiv.
-7. Shfaq pronën në arkiv, përdor kërkimin, ktheje draftin në editor ose fshije me konfirmim.
+Për demo, admin mund të përdorë email që fillon me `admin@`, ose rol `admin` nga forma e regjistrimit.
 
-Plani i plotë i prezantimit është te [docs/demo-plan.md](docs/demo-plan.md).
-
-## Statusi i projektit
-
-- UI është përditësuar dhe është në shqip.
-- API route ka validim më të mirë.
-- Gjenerimi me AI është lidhur me Groq.
-- Autentikimi dhe ruajtja e pronave janë lidhur me Supabase.
-- Arkivi ka kërkim dhe fshirje të pronave.
-- Përshkrimi i gjeneruar mund të eksportohet si `.txt`.
-- Draftet e arkivit mund të përdoren përsëri në editor.
-- Fshirja kërkon konfirmim para se të kryhet.
-- Projekti është gati për testim lokal dhe prezantim.
+```text
+Admin: admin@realestate.test
+Klient: klient@realestate.test
+```
 
 ## Autorja
 

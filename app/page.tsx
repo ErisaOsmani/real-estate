@@ -20,7 +20,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen items-center justify-center px-6">
       <div className="rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm uppercase tracking-[0.24em] text-white/80">
-        Duke hapur Real Estate AI...
+        Opening Real Estate AI...
       </div>
     </main>
   )

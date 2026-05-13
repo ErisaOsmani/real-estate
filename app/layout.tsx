@@ -4,7 +4,7 @@ import { AuthProvider } from "@/context/AuthContext"
 
 export const metadata: Metadata = {
   title: "Real Estate AI",
-  description: "Gjenero përshkrime profesionale të pronave me AI.",
+  description: "Generate professional property descriptions with AI.",
 }
 
 export default function RootLayout({
@@ -13,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="sq">
+    <html lang="en">
       <body className="antialiased">
         <AuthProvider>
           {children}

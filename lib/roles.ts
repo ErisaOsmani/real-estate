@@ -3,8 +3,8 @@ import type { User } from "@supabase/supabase-js"
 export type UserRole = "admin" | "client"
 
 export const roleLabels: Record<UserRole, string> = {
-  admin: "Jam pronar/agjenci",
-  client: "Po kërkoj banesë",
+  admin: "I am an owner/agency",
+  client: "I am looking for a home",
 }
 
 export const normalizeRole = (role: unknown): UserRole => {

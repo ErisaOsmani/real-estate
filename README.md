@@ -1,91 +1,66 @@
 # Real Estate AI
 
-Real Estate AI është marketplace për prona me dy role të qarta: **Admin/Pronar** dhe **Klient/Banor**. Admini regjistron dhe shpall pronat e veta për shitje ose qira; klienti i shfleton, i filtron dhe në sprintet e ardhshme do të marrë ndihmë nga AI për të zgjedhur pronën më të përshtatshme.
+Real Estate AI is a real estate marketplace with two clear roles:
 
-## Java 1: Struktura e produktit
+- **Admin/Owner:** registers, manages, publishes, and promotes properties.
+- **Client/Resident:** browses active properties, filters listings, saves favorites, asks AI for recommendations, and sends visit requests.
 
-Në këtë sprint u vendos baza e produktit:
+## Main Features
 
-- Rolet kryesore: `admin` dhe `client`.
-- Regjistrimi ka zgjedhje roli: `Admin/Pronar` ose `Klient/Banor`.
-- Login bën redirect sipas rolit:
-  - admini shkon te `/admin`
-  - klienti shkon te `/properties`
-- Root route `/` e dërgon përdoruesin te dashboard-i i duhur.
-- U hapën faqet kryesore të strukturës:
-  - `/login`
-  - `/signup`
-  - `/admin`
-  - `/admin/properties`
-  - `/properties`
-  - `/properties/[id]`
-  - `/favorites`
-- U dokumentua schema e planifikuar në [docs/database-schema.md](docs/database-schema.md).
+- Role-based signup and login.
+- Admin dashboard with property statistics and inquiry management.
+- Property creation, editing, publishing, unpublishing, and deletion.
+- Photo URL/upload support for property listings.
+- AI marketing package for admins:
+  - professional title
+  - listing description
+  - social media post
+  - short portal version
+  - missing-fields check
+- Client property search with filters and sorting.
+- Favorites saved in Supabase.
+- Client AI recommendations and property comparison.
+- Contact/visit request form.
+- Inquiry status workflow for admins.
 
-## Java 2: Regjistrimi, Kyçja Dhe Rolet
+## Routes
 
-Në këtë sprint u forcua sistemi i auth-it:
+```text
+/login
+/signup
+/admin
+/admin/properties
+/properties
+/properties/[id]
+/favorites
+```
 
-- Signup ka zgjedhje të qartë roli:
-  - `Jam pronar/agjenci`
-  - `Po kërkoj banesë`
-- Roli ruhet në metadata të Supabase dhe në tabelën `profiles`.
-- Pas regjistrimit krijohet profili i përdoruesit.
-- Login lexon rolin nga `profiles` dhe pastaj bën redirect:
-  - admini te `/admin`
-  - klienti te `/properties`
-- `/admin` dhe `/admin/properties` janë vetëm për admin.
-- `/properties`, `/properties/[id]` dhe `/favorites` janë hapësira e klientit.
-- Logout është i dukshëm në UI-në e klientit dhe adminit.
-- Mesazhet kryesore të gabimit janë në shqip.
-
-## Rolet
-
-**Admin/Pronar**
-
-- Regjistron prona për shitje ose qira.
-- Menaxhon pronat e veta.
-- Publikon ose çpublikon shpallje.
-- Në sprintet e ardhshme përdor AI për tituj, përshkrime dhe materiale marketingu.
-
-**Klient/Banor**
-
-- Shfleton pronat aktive.
-- Filtron pronat sipas shitje/qira.
-- Hap detajet e pronës.
-- Ruan favorite.
-- Në sprintet e ardhshme përdor AI për kërkim natyral, krahasime dhe rekomandime.
-
-## Database Schema
-
-Tabelat e planifikuara:
+## Database Tables
 
 - `profiles`
 - `properties`
 - `favorites`
 - `inquiries`
 
-Detajet janë te [docs/database-schema.md](docs/database-schema.md).
+The schema is documented in [docs/database-schema.md](docs/database-schema.md).
 
-Për Javën 2, tabela `profiles` duhet të krijohet në Supabase që regjistrimi të ruajë rolin si duhet.
+## Tech Stack
 
-## Teknologjitë
-
-- Next.js 16 me App Router
+- Next.js 16 with App Router
 - React 19
 - Tailwind CSS 4
-- Supabase Auth dhe Database
-- Groq API për veçoritë AI
+- Supabase Auth and Database
+- Groq API for AI features
 
-## Konfigurimi lokal
+## Local Setup
 
-1. Instalo varësitë:
+1. Install dependencies:
 
 ```bash
 npm install
 ```
 
-2. Krijo `.env.local`:
+2. Create `.env.local`:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
@@ -94,13 +69,13 @@ GROQ_API_KEY=your_groq_api_key
 NEXT_PUBLIC_ADMIN_EMAILS=admin@realestate.test
 ```
 
-3. Starto serverin lokal:
+3. Start the dev server:
 
 ```bash
 npm run dev
 ```
 
-4. Hape aplikacionin:
+4. Open:
 
 ```text
 http://localhost:3000
@@ -108,13 +83,29 @@ http://localhost:3000
 
 ## Demo Accounts
 
-Për demo, admin mund të përdorë email që fillon me `admin@`, ose rol `admin` nga forma e regjistrimit.
+Create these accounts from `/signup`:
 
 ```text
 Admin: admin@realestate.test
-Klient: klient@realestate.test
+Client: klient@realestate.test
 ```
 
-## Autorja
+Then run the seed file in Supabase SQL Editor:
+
+```text
+docs/demo-seed.sql
+```
+
+## Final Demo Flow
+
+1. Sign in as the admin and open `/admin`.
+2. Open `/admin/properties`, create or edit a property, and use `Improve with AI`.
+3. Publish the property as `Active`.
+4. Sign in as the client and open `/properties`.
+5. Search, filter, ask AI, and save a property as a favorite.
+6. Open property details and send a visit request.
+7. Return as the admin to `/admin#interesimet` and update the inquiry status.
+
+## Author
 
 Erisa Osmani

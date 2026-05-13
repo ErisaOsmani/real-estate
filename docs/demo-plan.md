@@ -1,139 +1,134 @@
-# Plani i demos
+# Plani i Demos
 
-## Tema e re e projektit
+## Produkti
 
-**Real Estate AI** është marketplace për prona me dy role:
+**Real Estate AI** është një marketplace për shpallje të pasurive të paluajtshme me dy role:
 
-- **Admin/Pronar:** regjistron pronat e veta dhe i shpall për shitje ose qira.
-- **Klient/Banor:** kërkon banesë ose shtëpi, filtron pronat dhe ruan ato që i interesojnë.
+- **Admin/Owner:** krijon, menaxhon, publikon dhe promovon pronat.
+- **Klient/Banor:** kërkon listime aktive, filtron rezultatet, ruan të preferuarat, kërkon ndihmë nga AI dhe dërgon kërkesa për vizitë.
 
-AI nuk do të jetë i njëjtë për të dy rolet:
+AI është i përshtatur sipas rolit:
 
-- Për adminin, AI ndihmon me tituj, përshkrime dhe materiale marketingu.
-- Për klientin, AI ndihmon me kërkim natyral, krahasim pronash dhe rekomandime.
+- AI për admin gjeneron përmbajtje për listim dhe marketing.
+- AI për klient rekomandon dhe krahason pronat aktive.
 
-## Java 1: Planifikimi, Rolet Dhe Struktura
+## Përgatitja e Demos
 
-### Qëllimi
-
-Të përcaktohet qartë produkti dhe të krijohet struktura bazë e aplikacionit.
-
-### Çfarë u vendos
-
-- Rolet:
-  - `admin` = Admin/Pronar
-  - `client` = Klient/Banor
-- Faqet kryesore:
-  - `/login`
-  - `/signup`
-  - `/admin`
-  - `/admin/properties`
-  - `/properties`
-  - `/properties/[id]`
-  - `/favorites`
-- Database schema e planifikuar:
-  - `profiles`
-  - `properties`
-  - `favorites`
-  - `inquiries`
-- Flow pas login:
-  - admini shkon te `/admin`
-  - klienti shkon te `/properties`
-
-### Çfarë u implementua
-
-- Signup me zgjedhje roli: `Admin/Pronar` ose `Klient/Banor`.
-- Ruajtje e rolit në metadata të Supabase gjatë regjistrimit.
-- Login me redirect sipas rolit.
-- Root route `/` e çon përdoruesin te dashboard-i përkatës.
-- Faqja `/properties` ka UI fillestar për klientin me kërkim dhe filtër `Shitje/Qira`.
-- Faqja `/properties/[id]` është placeholder për detajet e pronës.
-- Faqja `/favorites` është placeholder për pronat e ruajtura.
-- Faqja `/admin/properties` është placeholder për menaxhimin e pronave nga admini.
-- Faqja `/admin` mbetet paneli i adminit dhe lidhet me `/admin/properties`.
-- Schema është dokumentuar te `docs/database-schema.md`.
-
-## Rrjedha e demos për Javën 1
-
-1. Hape `/signup`.
-2. Zgjidh rolin `Admin/Pronar`.
-3. Regjistrohu me email demo, për shembull `admin@realestate.test`.
-4. Kyçu nga `/login`.
-5. Trego që admini shkon te `/admin`.
-6. Hape `/admin/properties` dhe shpjego që këtu admini do të regjistrojë pronat.
-7. Dil nga llogaria.
-8. Regjistrohu ose kyçu si `Klient/Banor`.
-9. Trego që klienti shkon te `/properties`.
-10. Filtro pronat sipas `Shitje` dhe `Qira`.
-11. Hap një detaj prone te `/properties/[id]`.
-12. Hape `/favorites` si strukturë për sprintin e favoritëve.
-
-## Database Schema
-
-Schema e detajuar është te:
+1. Krijo një llogari admin nga `/signup`:
 
 ```text
-docs/database-schema.md
+admin@realestate.test
 ```
 
-Tabelat e planifikuara:
+2. Krijo një llogari klienti nga `/signup`:
 
-- `profiles`: profili dhe roli i përdoruesit.
-- `properties`: pronat që admini publikon.
-- `favorites`: pronat që klienti ruan.
-- `inquiries`: interesimet ose kërkesat për vizitë.
+```text
+klient@realestate.test
+```
 
-## Rezultati i Javës 1
+3. Ekzekuto seed-in e demos në Supabase SQL Editor:
 
-Produkti tani ka drejtim të qartë:
+```text
+docs/demo-seed.sql
+```
 
-- Admini është pronari/agjencia.
-- Klienti është banori që kërkon pronë.
-- Rrugët kryesore janë krijuar.
-- Auth fillon të dallojë rolet.
-- UI fillestar i adminit dhe klientit ekziston.
-- Dokumentimi për strukturën dhe databazën është gati.
+4. Konfirmo që `.env.local` përmban:
 
-## Java 2: Regjistrimi, Kyçja Dhe Rolet
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+GROQ_API_KEY=your_groq_api_key
+NEXT_PUBLIC_ADMIN_EMAILS=admin@realestate.test
+```
 
-### Qëllimi
+## Rrjedha Finale e Demos
 
-Sistemi të dijë qartë kush është admin/pronar dhe kush është klient/banor.
+1. Hap `/login`.
+2. Identifikohu si admin.
+3. Shfaq `/admin`:
+   - numri total i pronave
+   - pronat aktive
+   - për shitje
+   - për qira
+   - draftet
+   - kërkesat
+4. Hap `/admin/properties`.
+5. Krijo ose edito një pronë:
+   - titulli
+   - shitje/qira
+   - lloji i pronës
+   - qyteti
+   - lagjja
+   - çmimi
+   - sipërfaqja
+   - dhomat e gjumit
+   - banjot
+   - përshkrimi
+   - fotografia
+   - statusi
+6. Kliko `Improve with AI`.
+7. Shfaq gjenerimin e mëposhtëm:
+   - titull profesional
+   - përshkrim
+   - postim për Instagram/Facebook
+   - version i shkurtër për portal
+   - kontrolli i fushave që mungojnë
+8. Apliko titullin dhe përshkrimin e gjeneruar nga AI në formë.
+9. Ruaje dhe publiko pronën si `Active`.
+10. Dil nga llogaria dhe identifikohu si klient.
+11. Hap `/properties`.
+12. Përdor kërkimin dhe filtrat:
+   - shitje/qira
+   - qyteti
+   - lloji i pronës
+   - çmimi min/max
+   - dhomat e gjumit
+   - sipërfaqja minimale
+   - renditja
+13. Kliko `Search`.
+14. Pyet AI e klientit:
 
-### Çfarë u implementua
+```text
+Kam nevojë për një apartament me qira në Prishtinë deri në 500 EUR
+```
 
-- Signup ka dy zgjedhje roli:
-  - `Jam pronar/agjenci`
-  - `Po kërkoj banesë`
-- Roli ruhet në Supabase metadata.
-- Pas signup krijohet profil në tabelën `profiles`.
-- Login lexon rolin nga `profiles` dhe bën redirect sipas rolit.
-- Nëse tabela `profiles` nuk është ende aktive, sistemi përdor metadata si fallback.
-- `/admin` dhe `/admin/properties` janë të mbrojtura për admin.
-- `/properties`, `/properties/[id]` dhe `/favorites` janë të mbrojtura për klient.
-- U shtua logout në UI-në e klientit.
-- Mesazhet kryesore të gabimit janë më të qarta në shqip.
+15. Shfaq rekomandimet, krahasimin, anët pozitive/negative dhe hapin e radhës.
+16. Ruaj një pronë si të preferuar.
+17. Hap `/favorites`.
+18. Hap faqen e detajeve të pronës.
+19. Dërgo një kërkesë për vizitë.
+20. Identifikohu sërish si admin.
+21. Hap `/admin#interesimet`.
+22. Përditëso statusin e kërkesës:
+   - E re
+   - I kontaktuar
+   - Vizita e planifikuar
+   - Mbyllur
 
-### Rrjedha e demos për Javën 2
+## Screenshots Për t'u Përgatitur
 
-1. Hap `/signup`.
-2. Zgjidh `Jam pronar/agjenci`.
-3. Regjistro adminin dhe trego që krijohet profili.
-4. Kyçu nga `/login`.
-5. Trego që admini shkon automatikisht te `/admin`.
-6. Provo të hapësh `/properties` si admin dhe trego që kthehet te `/admin`.
-7. Çkyçu.
-8. Regjistro ose kyçu si klient me `Po kërkoj banesë`.
-9. Trego që klienti shkon te `/properties`.
-10. Provo të hapësh `/admin` si klient dhe trego që nuk lejohet.
+- Faqja e login-it
+- Faqja e signup-it me zgjedhje roli
+- Dashboard-i i adminit
+- Forma e menaxhimit të pronës
+- Paketa e marketingut me AI
+- Rrjeta e pronave për klientin
+- Rekomandimet e AI për klientin
+- Faqja e të preferuarave
+- Detajet e pronës dhe forma e kontaktit
+- Seksioni i kërkesave të adminit
 
-## Sprintet e ardhshme
+## Verifikimi
 
-- Java 3: dashboard i adminit me navigim dhe statistika reale.
-- Java 4: shtim, editim, fshirje dhe publikim i pronave.
-- Java 5: AI për adminin.
-- Java 6: UI i klientit me prona reale nga Supabase.
-- Java 7: filtra, sortim dhe favorite reale.
-- Java 8: AI për klientin.
-- Java 9: kontakt dhe interesime.
-- Java 10: polish, testim dhe demo finale.
+Para prezantimit, ekzekuto:
+
+```bash
+npm.cmd run lint
+npm.cmd run build
+```
+
+Rezultati i pritur:
+
+- lint kalon
+- build-i i production kalon
+- të gjitha rrugët e demos ngarkohen saktë

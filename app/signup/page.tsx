@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useState } from "react"
 import TextInput from "@/app/components/TextInput"
+import { createUserProfile } from "@/lib/profiles"
 import { roleLabels, UserRole } from "@/lib/roles"
 import { supabase } from "@/lib/supabase"
 
@@ -14,6 +15,18 @@ export default function Signup() {
   const [loading, setLoading] = useState(false)
   const [name, setName] = useState("")
   const [role, setRole] = useState<UserRole>("client")
+
+  const getAuthErrorMessage = (message?: string) => {
+    if (!message) {
+      return "Nuk mundëm ta krijojmë llogarinë. Provo përsëri."
+    }
+
+    if (message.toLowerCase().includes("already")) {
+      return "Ky email është i regjistruar më herët."
+    }
+
+    return message
+  }
 
   const handleSignup = async () => {
     setError("")
@@ -36,7 +49,7 @@ export default function Signup() {
 
     setLoading(true)
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -48,9 +61,28 @@ export default function Signup() {
     })
 
     if (error) {
-      setError(error.message || "Nuk mundëm ta krijojmë llogarinë. Provo përsëri.")
+      setError(getAuthErrorMessage(error.message))
     } else {
-      setSuccess("Llogaria u krijua me sukses. Kontrollo email-in për konfirmim.")
+      if (data.user?.id) {
+        try {
+          await createUserProfile({
+            userId: data.user.id,
+            fullName: name,
+            role,
+          })
+        } catch (profileError) {
+          const profileMessage =
+            profileError instanceof Error ? profileError.message : "Gabim i panjohur."
+
+          setError(
+            `Llogaria u krijua, por profili nuk u ruajt. Kontrollo tabelën profiles në Supabase. Detaj: ${profileMessage}`
+          )
+          setLoading(false)
+          return
+        }
+      }
+
+      setSuccess("Llogaria dhe profili u krijuan me sukses. Tani mund të kyçesh.")
     }
 
     setLoading(false)
@@ -92,8 +124,8 @@ export default function Signup() {
                       <span className="block text-sm font-semibold">{roleLabels[option]}</span>
                       <span className={`mt-2 block text-xs leading-5 ${role === option ? "text-slate-700" : "text-white/52"}`}>
                         {option === "admin"
-                          ? "Regjistro dhe shpall prona për shitje ose qira."
-                          : "Kërko, filtro dhe ruaj pronat që të përshtaten."}
+                          ? "Regjistro pronat e tua dhe shpalli për shitje ose qira."
+                          : "Shfleto, filtro dhe ruaj banesat që të përshtaten."}
                       </span>
                     </button>
                   ))}

@@ -16,6 +16,27 @@ create table profiles (
 );
 ```
 
+Për Javën 2, kjo tabelë përdoret menjëherë pas signup-it për ta ruajtur rolin e përdoruesit.
+
+Policy minimale për zhvillim:
+
+```sql
+alter table profiles enable row level security;
+
+create policy "Users can read their own profile"
+on profiles for select
+using (auth.uid() = id);
+
+create policy "Users can create their own profile"
+on profiles for insert
+with check (auth.uid() = id);
+
+create policy "Users can update their own profile"
+on profiles for update
+using (auth.uid() = id)
+with check (auth.uid() = id);
+```
+
 ## `properties`
 
 Ruan pronat që admini/pronari i publikon për shitje ose qira.

@@ -1,7 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/context/AuthContext"
+import { getUserRole } from "@/lib/roles"
+import { supabase } from "@/lib/supabase"
 
 type ListingType = "Të gjitha" | "Shitje" | "Qira"
 
@@ -46,6 +50,24 @@ const demoProperties = [
 export default function PropertiesPage() {
   const [listingType, setListingType] = useState<ListingType>("Të gjitha")
   const [searchTerm, setSearchTerm] = useState("")
+  const { user, loading } = useAuth()
+  const router = useRouter()
+  const userRole = getUserRole(user)
+
+  useEffect(() => {
+    if (loading) {
+      return
+    }
+
+    if (!user) {
+      router.replace("/login")
+      return
+    }
+
+    if (userRole === "admin") {
+      router.replace("/admin")
+    }
+  }, [loading, router, user, userRole])
 
   const filteredProperties = useMemo(() => {
     const normalizedTerm = searchTerm.trim().toLowerCase()
@@ -62,6 +84,16 @@ export default function PropertiesPage() {
       return matchesType && matchesTerm
     })
   }, [listingType, searchTerm])
+
+  if (loading || !user || userRole === "admin") {
+    return (
+      <main className="flex min-h-screen items-center justify-center px-6">
+        <div className="rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm uppercase tracking-[0.24em] text-white/80">
+          Duke hapur hapësirën e klientit...
+        </div>
+      </main>
+    )
+  }
 
   return (
     <main className="min-h-screen">
@@ -86,12 +118,15 @@ export default function PropertiesPage() {
               >
                 Favoritët
               </Link>
-              <Link
-                href="/login"
+              <button
+                onClick={async () => {
+                  await supabase.auth.signOut()
+                  router.push("/login")
+                }}
                 className="rounded-full bg-amber-300 px-5 py-2 text-sm font-semibold text-slate-950 transition hover:bg-amber-200"
               >
-                Kyçu
-              </Link>
+                Çkyçu
+              </button>
             </div>
           </div>
         </header>

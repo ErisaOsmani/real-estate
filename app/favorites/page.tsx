@@ -4,18 +4,29 @@ import Link from "next/link"
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/AuthContext"
+import { getUserRole } from "@/lib/roles"
 
 export default function FavoritesPage() {
   const { user, loading } = useAuth()
   const router = useRouter()
+  const userRole = getUserRole(user)
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push("/login")
+    if (loading) {
+      return
     }
-  }, [loading, router, user])
 
-  if (loading || !user) {
+    if (!user) {
+      router.push("/login")
+      return
+    }
+
+    if (userRole === "admin") {
+      router.push("/admin")
+    }
+  }, [loading, router, user, userRole])
+
+  if (loading || !user || userRole === "admin") {
     return (
       <main className="flex min-h-screen items-center justify-center px-6">
         <div className="rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm uppercase tracking-[0.24em] text-white/80">

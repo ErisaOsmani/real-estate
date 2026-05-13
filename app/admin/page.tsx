@@ -35,10 +35,19 @@ export default function AdminPage() {
   const canAccessAdmin = isAdminUser(user)
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.push("/login")
+    if (authLoading) {
+      return
     }
-  }, [authLoading, router, user])
+
+    if (!user) {
+      router.push("/login")
+      return
+    }
+
+    if (!canAccessAdmin) {
+      router.push("/properties")
+    }
+  }, [authLoading, canAccessAdmin, router, user])
 
   useEffect(() => {
     const loadProperties = async () => {
@@ -133,6 +142,9 @@ export default function AdminPage() {
               Për demo, përdor një email që fillon me `admin@`, shto `role: admin`
               në metadata të përdoruesit, ose vendos `NEXT_PUBLIC_ADMIN_EMAILS`
               në `.env.local`.
+            </p>
+            <p className="mt-3 text-sm leading-6 text-white/55">
+              Po të kthejmë te lista e pronave për klientë.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <button

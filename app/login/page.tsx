@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import TextInput from "@/app/components/TextInput"
-import { getDashboardPath } from "@/lib/roles"
+import { getDashboardPathByRole, resolveUserRole } from "@/lib/profiles"
 import { supabase } from "@/lib/supabase"
 
 export default function Login() {
@@ -14,6 +14,24 @@ export default function Login() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+
+  const getAuthErrorMessage = (message?: string) => {
+    if (!message) {
+      return "Nuk mund të kyçesh. Provo përsëri."
+    }
+
+    const normalizedMessage = message.toLowerCase()
+
+    if (normalizedMessage.includes("invalid login")) {
+      return "Email-i ose fjalëkalimi nuk është i saktë."
+    }
+
+    if (normalizedMessage.includes("email not confirmed")) {
+      return "Email-i nuk është konfirmuar ende."
+    }
+
+    return message
+  }
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -30,9 +48,10 @@ export default function Login() {
     })
 
     if (error) {
-      setError(error.message || "Nuk mund të kyçesh. Provo përsëri.")
+      setError(getAuthErrorMessage(error.message))
     } else {
-      router.push(getDashboardPath(data.user))
+      const role = await resolveUserRole(data.user)
+      router.push(getDashboardPathByRole(role))
     }
 
     setLoading(false)

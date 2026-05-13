@@ -22,6 +22,23 @@ Në këtë sprint u vendos baza e produktit:
   - `/favorites`
 - U dokumentua schema e planifikuar në [docs/database-schema.md](docs/database-schema.md).
 
+## Java 2: Regjistrimi, Kyçja Dhe Rolet
+
+Në këtë sprint u forcua sistemi i auth-it:
+
+- Signup ka zgjedhje të qartë roli:
+  - `Jam pronar/agjenci`
+  - `Po kërkoj banesë`
+- Roli ruhet në metadata të Supabase dhe në tabelën `profiles`.
+- Pas regjistrimit krijohet profili i përdoruesit.
+- Login lexon rolin nga `profiles` dhe pastaj bën redirect:
+  - admini te `/admin`
+  - klienti te `/properties`
+- `/admin` dhe `/admin/properties` janë vetëm për admin.
+- `/properties`, `/properties/[id]` dhe `/favorites` janë hapësira e klientit.
+- Logout është i dukshëm në UI-në e klientit dhe adminit.
+- Mesazhet kryesore të gabimit janë në shqip.
+
 ## Rolet
 
 **Admin/Pronar**
@@ -49,6 +66,8 @@ Tabelat e planifikuara:
 - `inquiries`
 
 Detajet janë te [docs/database-schema.md](docs/database-schema.md).
+
+Për Javën 2, tabela `profiles` duhet të krijohet në Supabase që regjistrimi të ruajë rolin si duhet.
 
 ## Teknologjitë
 

@@ -3,8 +3,16 @@ import type { User } from "@supabase/supabase-js"
 export type UserRole = "admin" | "client"
 
 export const roleLabels: Record<UserRole, string> = {
-  admin: "Admin/Pronar",
-  client: "Klient/Banor",
+  admin: "Jam pronar/agjenci",
+  client: "Po kërkoj banesë",
+}
+
+export const normalizeRole = (role: unknown): UserRole => {
+  const normalizedRole = String(role ?? "").toLowerCase()
+
+  return normalizedRole === "admin" || normalizedRole === "owner"
+    ? "admin"
+    : "client"
 }
 
 export const getUserRole = (user: User | null): UserRole => {
@@ -17,10 +25,8 @@ export const getUserRole = (user: User | null): UserRole => {
   const email = user.email?.toLowerCase() ?? ""
 
   if (
-    appRole === "admin" ||
-    appRole === "owner" ||
-    profileRole === "admin" ||
-    profileRole === "owner" ||
+    normalizeRole(appRole) === "admin" ||
+    normalizeRole(profileRole) === "admin" ||
     email.startsWith("admin@")
   ) {
     return "admin"

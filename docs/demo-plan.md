@@ -94,9 +94,41 @@ Produkti tani ka drejtim të qartë:
 - UI fillestar i adminit dhe klientit ekziston.
 - Dokumentimi për strukturën dhe databazën është gati.
 
+## Java 2: Regjistrimi, Kyçja Dhe Rolet
+
+### Qëllimi
+
+Sistemi të dijë qartë kush është admin/pronar dhe kush është klient/banor.
+
+### Çfarë u implementua
+
+- Signup ka dy zgjedhje roli:
+  - `Jam pronar/agjenci`
+  - `Po kërkoj banesë`
+- Roli ruhet në Supabase metadata.
+- Pas signup krijohet profil në tabelën `profiles`.
+- Login lexon rolin nga `profiles` dhe bën redirect sipas rolit.
+- Nëse tabela `profiles` nuk është ende aktive, sistemi përdor metadata si fallback.
+- `/admin` dhe `/admin/properties` janë të mbrojtura për admin.
+- `/properties`, `/properties/[id]` dhe `/favorites` janë të mbrojtura për klient.
+- U shtua logout në UI-në e klientit.
+- Mesazhet kryesore të gabimit janë më të qarta në shqip.
+
+### Rrjedha e demos për Javën 2
+
+1. Hap `/signup`.
+2. Zgjidh `Jam pronar/agjenci`.
+3. Regjistro adminin dhe trego që krijohet profili.
+4. Kyçu nga `/login`.
+5. Trego që admini shkon automatikisht te `/admin`.
+6. Provo të hapësh `/properties` si admin dhe trego që kthehet te `/admin`.
+7. Çkyçu.
+8. Regjistro ose kyçu si klient me `Po kërkoj banesë`.
+9. Trego që klienti shkon te `/properties`.
+10. Provo të hapësh `/admin` si klient dhe trego që nuk lejohet.
+
 ## Sprintet e ardhshme
 
-- Java 2: kompletim i auth me tabelën `profiles` dhe route protection më të fortë.
 - Java 3: dashboard i adminit me navigim dhe statistika reale.
 - Java 4: shtim, editim, fshirje dhe publikim i pronave.
 - Java 5: AI për adminin.

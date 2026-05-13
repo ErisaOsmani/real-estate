@@ -12,10 +12,19 @@ export default function AdminPropertiesPage() {
   const canAccessAdmin = isAdminUser(user)
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push("/login")
+    if (loading) {
+      return
     }
-  }, [loading, router, user])
+
+    if (!user) {
+      router.push("/login")
+      return
+    }
+
+    if (!canAccessAdmin) {
+      router.push("/properties")
+    }
+  }, [canAccessAdmin, loading, router, user])
 
   if (loading || !user) {
     return (
@@ -37,6 +46,9 @@ export default function AdminPropertiesPage() {
           <h1 className="font-display mt-4 text-4xl text-white">
             Vetëm admini mund të menaxhojë prona.
           </h1>
+          <p className="mt-3 text-sm leading-6 text-white/62">
+            Po të kthejmë te hapësira e klientit.
+          </p>
           <Link
             href="/properties"
             className="mt-6 inline-flex rounded-full bg-amber-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-200"

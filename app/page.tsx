@@ -1,33 +1,34 @@
-'use client'
+"use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/AuthContext"
 import { supabase } from "@/lib/supabase"
-import { createProperty, generateProperty, getUserProperties, Property } from "../lib/api"
+import {
+  createProperty,
+  deleteProperty,
+  generateProperty,
+  getUserProperties,
+  ListingTone,
+  Property,
+} from "../lib/api"
+
+const samplePrompt =
+  "Penthouse modern në Prishtinë, 214 m2, 3 dhoma gjumi, 2 banjo, dritare panoramike, terasë private, kuzhinë premium, parking për 2 vetura, afër qendrës, çmimi 420,000 EUR."
+
+const toneOptions: ListingTone[] = ["Profesional", "Luksoz", "Familjar", "I shkurtër"]
 
 const featurePills = [
-  "AI-tailored listing copy",
-  "Faster client-ready drafts",
-  "One-click property archive",
+  "Përshkrim në shqip",
+  "Ton i zgjedhshëm",
+  "Arkiv privat i pronave",
 ]
 
-const workflowSteps = [
-  {
-    label: "01",
-    title: "Add the raw property details",
-    description: "Drop in location, pricing, size, style, and the details you want buyers to feel.",
-  },
-  {
-    label: "02",
-    title: "Generate a polished sales narrative",
-    description: "The assistant turns fragmented notes into clean, premium listing language.",
-  },
-  {
-    label: "03",
-    title: "Save your strongest version",
-    description: "Keep a private library of ready-to-use descriptions for your next campaign.",
-  },
+const checklistItems = [
+  { label: "Lokacioni", patterns: ["prishtin", "prizren", "pej", "gjakov", "gjilan", "mitrovic", "ferizaj", "qend"] },
+  { label: "Sipërfaqja", patterns: ["m2", "m²", "metra", "meter"] },
+  { label: "Çmimi", patterns: ["eur", "€", "cmim", "çmim"] },
+  { label: "Karakteristikat", patterns: ["teras", "parking", "ballkon", "kuzhin", "dritare", "dhoma", "banjo"] },
 ]
 
 const getErrorMessage = (error: unknown, fallbackMessage: string) => {
@@ -40,16 +41,47 @@ const getErrorMessage = (error: unknown, fallbackMessage: string) => {
 
 export default function Home() {
   const [input, setInput] = useState("")
+  const [tone, setTone] = useState<ListingTone>("Profesional")
   const [response, setResponse] = useState("")
   const [loading, setLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [deletingPropertyId, setDeletingPropertyId] = useState("")
   const [isLoadingProperties, setIsLoadingProperties] = useState(true)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  const [copied, setCopied] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("")
   const [properties, setProperties] = useState<Property[]>([])
 
   const { user, loading: authLoading } = useAuth()
   const router = useRouter()
+
+  const completedChecklist = useMemo(() => {
+    const normalizedInput = input.toLowerCase()
+
+    return checklistItems.map((item) => ({
+      ...item,
+      completed: item.patterns.some((pattern) => normalizedInput.includes(pattern)),
+    }))
+  }, [input])
+
+  const filteredProperties = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase()
+
+    if (!term) {
+      return properties
+    }
+
+    return properties.filter(
+      (property) =>
+        property.title.toLowerCase().includes(term) ||
+        property.description.toLowerCase().includes(term)
+    )
+  }, [properties, searchTerm])
+
+  const wordCount = response
+    ? response.split(/\s+/).filter(Boolean).length
+    : 0
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -71,7 +103,7 @@ export default function Home() {
         const data = await getUserProperties(user.id)
         setProperties(data)
       } catch (err: unknown) {
-        setError(getErrorMessage(err, "We could not load your saved properties."))
+        setError(getErrorMessage(err, "Nuk mundëm t'i ngarkojmë pronat e ruajtura."))
       } finally {
         setIsLoadingProperties(false)
       }
@@ -88,12 +120,12 @@ export default function Home() {
     }
 
     if (!input.trim()) {
-      setError("Please enter property details")
+      setError("Shkruaj detajet e pronës para gjenerimit.")
       return
     }
 
-    if (input.length > 500) {
-      setError("Input is too long (max 500 characters)")
+    if (input.length > 700) {
+      setError("Teksti është shumë i gjatë. Maksimumi është 700 karaktere.")
       return
     }
 
@@ -101,15 +133,16 @@ export default function Home() {
     setError("")
     setResponse("")
     setSuccess("")
+    setCopied(false)
 
     try {
-      const data = await generateProperty(input.trim())
+      const data = await generateProperty(input.trim(), tone)
       setResponse(data.reply)
     } catch (err: unknown) {
-      const errorMessage = getErrorMessage(err, "Something went wrong. Try again.")
+      const errorMessage = getErrorMessage(err, "Diçka shkoi keq. Provo përsëri.")
 
       if (errorMessage.includes("Failed to fetch")) {
-        setError("No internet connection")
+        setError("Nuk ka lidhje me internet.")
       } else {
         setError(errorMessage)
       }
@@ -124,12 +157,12 @@ export default function Home() {
     }
 
     if (!response) {
-      setError("Please generate description first")
+      setError("Së pari gjenero përshkrimin.")
       return
     }
 
     if (!user?.id) {
-      setError("Your session has expired. Please log in again.")
+      setError("Sesioni ka skaduar. Kyçu përsëri.")
       return
     }
 
@@ -142,7 +175,7 @@ export default function Home() {
     )
 
     if (exists) {
-      setError("This property is already saved")
+      setError("Kjo pronë është ruajtur më herët.")
       return
     }
 
@@ -159,169 +192,287 @@ export default function Home() {
 
       const updatedProperties = await getUserProperties(user.id)
       setProperties(updatedProperties)
-      setSuccess("Property saved successfully and added to your list.")
+      setSuccess("Prona u ruajt me sukses në arkiv.")
     } catch (err: unknown) {
-      setError(getErrorMessage(err, "We could not save this property. Please try again."))
+      setError(getErrorMessage(err, "Nuk mundëm ta ruajmë pronën. Provo përsëri."))
     } finally {
       setIsSaving(false)
     }
   }
 
+  const deleteSavedProperty = async (propertyId: string) => {
+    if (!user?.id || deletingPropertyId) {
+      return
+    }
+
+    const confirmed = window.confirm("A je i sigurt që dëshiron ta fshish këtë pronë?")
+
+    if (!confirmed) {
+      return
+    }
+
+    setDeletingPropertyId(propertyId)
+    setError("")
+    setSuccess("")
+
+    try {
+      await deleteProperty({
+        propertyId,
+        userId: user.id,
+      })
+
+      setProperties((currentProperties) =>
+        currentProperties.filter((property) => property.id !== propertyId)
+      )
+      setSuccess("Prona u fshi nga arkivi.")
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Nuk mundëm ta fshijmë pronën. Provo përsëri."))
+    } finally {
+      setDeletingPropertyId("")
+    }
+  }
+
+  const clearWorkspace = () => {
+    setInput("")
+    setResponse("")
+    setError("")
+    setSuccess("")
+    setCopied(false)
+  }
+
+  const reuseProperty = (property: Property) => {
+    setInput(property.title)
+    setResponse(property.description)
+    setError("")
+    setSuccess("Drafti u kthye në editor.")
+    setCopied(false)
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }
+
+  const copyDescription = async () => {
+    if (!response) {
+      return
+    }
+
+    await navigator.clipboard.writeText(response)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1800)
+  }
+
+  const exportDescription = () => {
+    if (!response) {
+      return
+    }
+
+    const fileContent = [
+      "Real Estate AI",
+      "",
+      `Toni: ${tone}`,
+      "",
+      "Detajet e pronës:",
+      input.trim(),
+      "",
+      "Përshkrimi i gjeneruar:",
+      response.trim(),
+    ].join("\n")
+
+    const blob = new Blob([fileContent], { type: "text/plain;charset=utf-8" })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+
+    link.href = url
+    link.download = `pershkrim-prone-${Date.now()}.txt`
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
+  }
+
   if (authLoading || !user) {
     return (
       <main className="flex min-h-screen items-center justify-center px-6">
-        <div className="rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm tracking-[0.24em] text-white/80 uppercase">
-          Checking authentication...
+        <div className="rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm uppercase tracking-[0.24em] text-white/80">
+          Duke kontrolluar kyçjen...
         </div>
       </main>
     )
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[-10%] top-12 h-64 w-64 rounded-full bg-amber-300/15 blur-3xl" />
-        <div className="absolute right-[-6%] top-40 h-80 w-80 rounded-full bg-sky-400/10 blur-3xl" />
-        <div className="absolute bottom-0 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-emerald-300/10 blur-3xl" />
-      </div>
-
-      <section className="relative mx-auto flex w-full max-w-7xl flex-col gap-10 px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
-        <header className="rounded-[2rem] border border-white/10 bg-white/6 px-5 py-4 backdrop-blur-xl sm:px-6">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <main className="min-h-screen">
+      <section className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+        <header className="border-b border-white/10 pb-6">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="text-xs font-medium uppercase tracking-[0.32em] text-amber-200/80">
-                ESTATE STUDIO AI
+                REAL ESTATE AI
               </p>
               <h1 className="font-display mt-2 text-4xl leading-none text-white sm:text-5xl lg:text-6xl">
-                Listings that feel curated, not generated.
+                Studio inteligjente për përshkrime pronash.
               </h1>
+              <p className="mt-4 max-w-2xl text-sm leading-6 text-white/62">
+                Gjenero tekst profesional në shqip, ruaje në arkiv dhe prezanto pronat me më shumë siguri.
+              </p>
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="rounded-full border border-white/10 bg-black/20 px-4 py-2 text-sm text-white/80">
-                Welcome back, {user.user_metadata?.full_name || user.email}
+              <div className="rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-sm text-white/78">
+                {user.user_metadata?.full_name || user.email}
               </div>
               <button
                 onClick={async () => {
                   await supabase.auth.signOut()
                   router.push("/login")
                 }}
-                className="rounded-full border border-white/15 bg-white/8 px-5 py-2 text-sm font-medium text-white transition hover:bg-white/16"
+                className="rounded-full border border-white/15 bg-white/[0.06] px-5 py-2 text-sm font-medium text-white transition hover:bg-white/[0.12]"
               >
-                Logout
+                Çkyçu
               </button>
             </div>
           </div>
         </header>
 
-        <section className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-          <div className="rounded-[2rem] border border-white/10 bg-stone-950/40 p-6 shadow-[0_25px_90px_rgba(15,23,42,0.45)] backdrop-blur-xl sm:p-8">
+        <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+          <aside className="space-y-6 rounded-3xl border border-white/10 bg-white/[0.06] p-6 shadow-[0_25px_80px_rgba(2,6,23,0.28)] sm:p-8">
             <div className="flex flex-wrap gap-3">
               {featurePills.map((pill) => (
                 <span
                   key={pill}
-                  className="rounded-full border border-amber-200/15 bg-amber-200/8 px-4 py-2 text-xs uppercase tracking-[0.24em] text-amber-100/80"
+                  className="rounded-full border border-amber-200/15 bg-amber-200/8 px-4 py-2 text-xs uppercase tracking-[0.22em] text-amber-100/82"
                 >
                   {pill}
                 </span>
               ))}
             </div>
 
-            <div className="mt-8 max-w-2xl">
-              <p className="text-sm uppercase tracking-[0.3em] text-white/45">
-                Your copywriting lounge
+            <div>
+              <p className="text-sm uppercase tracking-[0.28em] text-white/45">
+                Paneli i projektit
               </p>
-              <h2 className="font-display mt-3 text-5xl leading-[0.95] text-white sm:text-6xl">
-                Turn rough notes into luxury-grade property storytelling.
+              <h2 className="font-display mt-3 text-4xl leading-tight text-white sm:text-5xl">
+                Nga shënime të thjeshta në tekst gati për publikim.
               </h2>
-              <p className="mt-5 max-w-xl text-base leading-7 text-white/68">
-                Built for agents and studios who want cleaner presentation, faster publishing, and copy that sounds intentional from the first draft.
+              <p className="mt-4 text-sm leading-7 text-white/62">
+                Menaxho stilin e tekstit, kontrollo cilësinë e input-it dhe ruaji draftet në një arkiv të qartë.
               </p>
             </div>
 
-            <div className="mt-10 grid gap-4 sm:grid-cols-3">
-              <div className="rounded-[1.5rem] border border-white/8 bg-white/6 p-4">
-                <p className="text-xs uppercase tracking-[0.24em] text-white/45">Output</p>
-                <p className="mt-3 text-3xl text-white">Premium</p>
-                <p className="mt-2 text-sm text-white/55">Sharper listing tone for portals, brochures, and campaigns.</p>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="rounded-2xl border border-white/8 bg-black/20 p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-white/42">Draftet</p>
+                <p className="mt-2 text-3xl text-white">{properties.length}</p>
               </div>
-              <div className="rounded-[1.5rem] border border-white/8 bg-white/6 p-4">
-                <p className="text-xs uppercase tracking-[0.24em] text-white/45">Workflow</p>
-                <p className="mt-3 text-3xl text-white">Fast</p>
-                <p className="mt-2 text-sm text-white/55">From messy inputs to usable copy in a few seconds.</p>
+              <div className="rounded-2xl border border-white/8 bg-black/20 p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-white/42">Fjalë</p>
+                <p className="mt-2 text-3xl text-white">{wordCount}</p>
               </div>
-              <div className="rounded-[1.5rem] border border-white/8 bg-white/6 p-4">
-                <p className="text-xs uppercase tracking-[0.24em] text-white/45">Library</p>
-                <p className="mt-3 text-3xl text-white">{properties.length}</p>
-                <p className="mt-2 text-sm text-white/55">Saved property drafts available in your private archive.</p>
+              <div className="rounded-2xl border border-white/8 bg-black/20 p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-white/42">Toni</p>
+                <p className="mt-2 text-xl text-white">{tone}</p>
               </div>
             </div>
-          </div>
 
-          <div className="rounded-[2rem] border border-white/10 bg-white/[0.075] p-6 backdrop-blur-xl sm:p-8">
-            <p className="text-sm uppercase tracking-[0.32em] text-white/45">
-              Workflow
-            </p>
-            <div className="mt-6 space-y-5">
-              {workflowSteps.map((step) => (
-                <div key={step.label} className="rounded-[1.5rem] border border-white/8 bg-black/15 p-5">
-                  <div className="flex items-center gap-4">
-                    <span className="font-display text-4xl text-amber-200">{step.label}</span>
-                    <h3 className="text-lg font-medium text-white">{step.title}</h3>
+            <div className="rounded-2xl border border-white/8 bg-black/15 p-5">
+              <p className="text-sm font-medium text-white">Kontrolli para gjenerimit</p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                {completedChecklist.map((item) => (
+                  <div key={item.label} className="flex items-center gap-3 text-sm text-white/68">
+                    <span
+                      className={`grid h-6 w-6 place-items-center rounded-full border text-xs ${
+                        item.completed
+                          ? "border-emerald-300/35 bg-emerald-300/15 text-emerald-100"
+                          : "border-white/12 bg-white/[0.04] text-white/45"
+                      }`}
+                    >
+                      {item.completed ? "✓" : "·"}
+                    </span>
+                    {item.label}
                   </div>
-                  <p className="mt-3 text-sm leading-6 text-white/60">{step.description}</p>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </aside>
 
-        <section className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-          <div className="rounded-[2rem] border border-white/10 bg-slate-950/45 p-6 backdrop-blur-xl sm:p-8">
-            <div className="flex items-start justify-between gap-4">
+          <section className="rounded-3xl border border-white/10 bg-slate-950/48 p-6 shadow-[0_25px_80px_rgba(2,6,23,0.32)] sm:p-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <p className="text-sm uppercase tracking-[0.28em] text-white/45">
-                  Generator
+                  Gjeneratori
                 </p>
                 <h2 className="font-display mt-2 text-4xl text-white">
-                  Craft your next listing
+                  Krijo përshkrimin e pronës
                 </h2>
               </div>
-              <div className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-xs uppercase tracking-[0.24em] text-white/60">
-                {input.length}/500
+              <div className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-xs uppercase tracking-[0.22em] text-white/60">
+                {input.length}/700
               </div>
             </div>
 
-            <div className="mt-6 rounded-[1.75rem] border border-white/10 bg-white/[0.045] p-3">
+            <div className="mt-6">
+              <label className="text-xs font-medium uppercase tracking-[0.24em] text-white/55">
+                Toni i tekstit
+              </label>
+              <div className="mt-3 grid gap-2 sm:grid-cols-4">
+                {toneOptions.map((option) => (
+                  <button
+                    key={option}
+                    onClick={() => setTone(option)}
+                    className={`rounded-full border px-4 py-2 text-sm transition ${
+                      tone === option
+                        ? "border-amber-200/40 bg-amber-200 text-slate-950"
+                        : "border-white/10 bg-white/[0.04] text-white/72 hover:bg-white/[0.08]"
+                    }`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.045] p-3">
               <textarea
-                className="h-56 w-full resize-none rounded-[1.25rem] border border-white/6 bg-transparent p-4 text-base text-white placeholder:text-white/30 focus:outline-none"
-                placeholder="Example: Duplex penthouse in Prishtina, 214m2, floor-to-ceiling windows, private terrace, premium kitchen, parking for 2 cars, asking price 420,000 EUR..."
+                className="h-56 w-full resize-none rounded-2xl border border-white/6 bg-transparent p-4 text-base text-white placeholder:text-white/30 focus:outline-none"
+                placeholder="Shembull: banesë moderne në Prishtinë, 86 m2, 2 dhoma gjumi, ballkon, parking, afër shkollës, çmimi 145,000 EUR..."
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={(event) => setInput(event.target.value)}
                 disabled={loading || isSaving}
               />
             </div>
 
-            <div className="mt-3 flex flex-col gap-2 text-sm text-white/55 sm:flex-row sm:items-center sm:justify-between">
-              <p>Include location, size, price, atmosphere, standout finishes, and target buyer appeal.</p>
-              <p>{response ? "Draft generated and ready to review." : "No draft generated yet."}</p>
-            </div>
-
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <button
+                onClick={() => {
+                  setInput(samplePrompt)
+                  setResponse("")
+                  setError("")
+                  setSuccess("")
+                  setCopied(false)
+                }}
+                disabled={loading || isSaving}
+                className="rounded-full border border-white/12 bg-white/[0.06] px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/[0.1] disabled:cursor-not-allowed disabled:opacity-55"
+              >
+                Vendos shembullin
+              </button>
+              <button
+                onClick={clearWorkspace}
+                disabled={loading || isSaving || (!input && !response)}
+                className="rounded-full border border-white/12 bg-black/20 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-45"
+              >
+                Pastro
+              </button>
               <button
                 onClick={generateDescription}
                 disabled={loading || isSaving}
                 className="flex-1 rounded-full bg-amber-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-200 disabled:cursor-not-allowed disabled:opacity-55"
               >
-                {loading ? "Generating..." : "Generate Description"}
+                {loading ? "Duke gjeneruar..." : "Gjenero përshkrimin"}
               </button>
-
               <button
                 onClick={saveProperty}
                 disabled={loading || isSaving || !response}
-                className="flex-1 rounded-full border border-emerald-300/25 bg-emerald-300/12 px-6 py-3 text-sm font-semibold text-emerald-100 transition hover:bg-emerald-300/20 disabled:cursor-not-allowed disabled:opacity-55"
+                className="rounded-full border border-emerald-300/25 bg-emerald-300/12 px-6 py-3 text-sm font-semibold text-emerald-100 transition hover:bg-emerald-300/20 disabled:cursor-not-allowed disabled:opacity-55"
               >
-                {isSaving ? "Saving..." : "Save Property"}
+                {isSaving ? "Duke ruajtur..." : "Ruaj pronën"}
               </button>
             </div>
 
@@ -342,96 +493,125 @@ export default function Home() {
                 {success}
               </p>
             )}
-          </div>
+          </section>
+        </section>
 
-          <div className="rounded-[2rem] border border-white/10 bg-white/[0.075] p-6 backdrop-blur-xl sm:p-8">
-            <div className="flex items-center justify-between gap-4">
+        <section className="rounded-3xl border border-white/10 bg-white/[0.07] p-6 sm:p-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <p className="text-sm uppercase tracking-[0.28em] text-white/45">
-                  Generated copy
+                  Rezultati
                 </p>
                 <h2 className="font-display mt-2 text-4xl text-white">
-                  Presentation-ready output
+                  Teksti i gjeneruar
                 </h2>
               </div>
-              <div className="hidden rounded-full border border-white/10 bg-black/20 px-4 py-2 text-xs uppercase tracking-[0.24em] text-white/50 sm:block">
-                AI writing room
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <button
+                  onClick={copyDescription}
+                  disabled={!response}
+                  className="rounded-full border border-white/12 bg-black/20 px-5 py-2 text-sm font-semibold text-white transition hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-45"
+                >
+                  {copied ? "U kopjua" : "Kopjo tekstin"}
+                </button>
+                <button
+                  onClick={exportDescription}
+                  disabled={!response}
+                  className="rounded-full border border-amber-200/20 bg-amber-200/10 px-5 py-2 text-sm font-semibold text-amber-100 transition hover:bg-amber-200/18 disabled:cursor-not-allowed disabled:opacity-45"
+                >
+                  Eksporto .txt
+                </button>
               </div>
             </div>
 
-            <div className="mt-6 min-h-[22rem] rounded-[1.75rem] border border-white/10 bg-black/20 p-5">
+            <div className="mt-6 min-h-[20rem] rounded-3xl border border-white/10 bg-black/20 p-5">
               {response ? (
-                <div>
-                  <p className="text-xs uppercase tracking-[0.28em] text-amber-100/65">
-                    Generated Description
-                  </p>
-                  <p className="mt-4 whitespace-pre-line text-[15px] leading-7 text-white/78">
-                    {response}
-                  </p>
-                </div>
+                <p className="whitespace-pre-line text-[15px] leading-7 text-white/80">
+                  {response}
+                </p>
               ) : (
-                <div className="flex h-full flex-col justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.28em] text-white/40">
-                      Awaiting your prompt
-                    </p>
-                    <h3 className="font-display mt-3 text-3xl text-white">
-                      Your polished listing will appear here.
-                    </h3>
-                    <p className="mt-4 max-w-md text-sm leading-7 text-white/55">
-                      Once you generate a draft, this panel becomes your clean review space for listing copy before saving it to the archive.
-                    </p>
-                  </div>
-
-                  <div className="mt-6 rounded-[1.5rem] border border-dashed border-white/15 bg-white/[0.03] p-4 text-sm text-white/45">
-                    Tip: lead with the facts, then add mood, materials, amenities, and the ideal buyer profile.
-                  </div>
+                <div className="flex h-full flex-col justify-center">
+                  <p className="text-xs uppercase tracking-[0.28em] text-white/40">
+                    Ende pa rezultat
+                  </p>
+                  <h3 className="font-display mt-3 text-3xl text-white">
+                    Përshkrimi profesional do të shfaqet këtu.
+                  </h3>
+                  <p className="mt-4 max-w-md text-sm leading-7 text-white/55">
+                    Shto detajet e pronës, zgjidh tonin dhe gjenero tekstin final.
+                  </p>
                 </div>
               )}
             </div>
-          </div>
         </section>
 
-        <section className="rounded-[2rem] border border-white/10 bg-stone-950/35 p-6 backdrop-blur-xl sm:p-8">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <section className="rounded-3xl border border-white/10 bg-slate-950/42 p-6 sm:p-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.28em] text-white/45">
-                Saved archive
+                Arkivi
               </p>
               <h2 className="font-display mt-2 text-4xl text-white">
-                Your property library
+                Pronat e ruajtura
               </h2>
             </div>
-            <p className="max-w-xl text-sm leading-6 text-white/55">
-              Keep your best drafts in one place so you can revisit, refine, and reuse them across campaigns.
-            </p>
+            <input
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Kërko në arkiv..."
+              className="w-full rounded-full border border-white/10 bg-white/[0.05] px-5 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none sm:max-w-xs"
+            />
           </div>
 
           {isLoadingProperties && (
-            <div className="mt-6 rounded-[1.5rem] border border-white/8 bg-white/[0.045] p-5 text-sm text-white/55">
-              Loading your saved properties...
+            <div className="mt-6 rounded-2xl border border-white/8 bg-white/[0.045] p-5 text-sm text-white/55">
+              Duke ngarkuar pronat e ruajtura...
             </div>
           )}
 
           {!isLoadingProperties && properties.length === 0 && (
-            <div className="mt-6 rounded-[1.5rem] border border-dashed border-white/12 bg-white/[0.03] p-6">
-              <p className="text-lg text-white">No saved properties yet.</p>
+            <div className="mt-6 rounded-2xl border border-dashed border-white/12 bg-white/[0.03] p-6">
+              <p className="text-lg text-white">Ende nuk ka prona të ruajtura.</p>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-white/55">
-                Generate a polished description, save it, and this space will turn into your own curated listing archive.
+                Gjenero një përshkrim, ruaje dhe ky seksion do të mbushet me draftet e tua.
               </p>
             </div>
           )}
 
-          {properties.length > 0 && (
+          {!isLoadingProperties && properties.length > 0 && filteredProperties.length === 0 && (
+            <div className="mt-6 rounded-2xl border border-dashed border-white/12 bg-white/[0.03] p-6 text-sm text-white/60">
+              Nuk u gjet asnjë pronë me këtë kërkim.
+            </div>
+          )}
+
+          {filteredProperties.length > 0 && (
             <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {properties.map((item, index) => (
+              {filteredProperties.map((item, index) => (
                 <article
                   key={item.id}
-                  className="rounded-[1.5rem] border border-white/8 bg-white/[0.045] p-5 transition hover:-translate-y-1 hover:bg-white/[0.07]"
+                  className="rounded-2xl border border-white/8 bg-white/[0.045] p-5 transition hover:-translate-y-1 hover:bg-white/[0.07]"
                 >
-                  <p className="text-xs uppercase tracking-[0.28em] text-amber-100/55">
-                    Draft {String(index + 1).padStart(2, "0")}
-                  </p>
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-xs uppercase tracking-[0.28em] text-amber-100/55">
+                      Draft {String(index + 1).padStart(2, "0")}
+                    </p>
+                    <div className="flex shrink-0 gap-2">
+                      <button
+                        onClick={() => reuseProperty(item)}
+                        disabled={loading || isSaving}
+                        className="rounded-full border border-amber-200/20 bg-amber-200/10 px-3 py-1 text-xs font-semibold text-amber-100 transition hover:bg-amber-200/18 disabled:cursor-not-allowed disabled:opacity-45"
+                      >
+                        Përdor
+                      </button>
+                      <button
+                        onClick={() => deleteSavedProperty(item.id)}
+                        disabled={Boolean(deletingPropertyId)}
+                        className="rounded-full border border-rose-300/20 bg-rose-400/10 px-3 py-1 text-xs font-semibold text-rose-100 transition hover:bg-rose-400/18 disabled:cursor-not-allowed disabled:opacity-45"
+                      >
+                        {deletingPropertyId === item.id ? "Duke fshirë..." : "Fshij"}
+                      </button>
+                    </div>
+                  </div>
                   <h3 className="mt-3 line-clamp-2 text-xl text-white">{item.title}</h3>
                   <p className="mt-4 line-clamp-6 text-sm leading-6 text-white/60">
                     {item.description}

@@ -1,108 +1,125 @@
-# Plani i Demos
+# Plani i demos
 
 ## Përmbledhja e projektit
 
 **Projekti:** Real Estate AI  
-**Kujt i shërben:** agjentëve të patundshmërive, marketerëve të pronave dhe agjencive të vogla  
-**Problemi që zgjidh:** shkrimi manual i përshkrimeve të pronave merr kohë dhe shpesh nuk është i njëtrajtshëm në cilësi.  
-**Zgjidhja:** aplikacioni përdor AI për t’i kthyer të dhënat bazë të pronës në përshkrim profesional dhe i lejon përdoruesit t’i ruajnë draftet në hapësirën e tyre private.
+**Kujt i shërben:** agjentëve të patundshmërive, marketerëve të pronave dhe agjencive të vogla.  
+**Problemi që zgjidh:** shkrimi manual i përshkrimeve të pronave merr kohë dhe shpesh nuk ka cilësi të njëtrajtshme.  
+**Zgjidhja:** aplikacioni përdor AI për t'i kthyer të dhënat bazë të pronës në përshkrim profesional në shqip. Përdoruesi mund ta zgjedhë tonin e tekstit, ta kopjojë rezultatin dhe ta ruajë draftin në arkivin e tij privat.
 
 ## Qëllimi i demos
 
-Të tregojë qartë që produkti zgjidh një workflow real:
+Demoja duhet të tregojë një rrjedhë reale pune:
 
-1. Përdoruesi kyçet në sistem
-2. Përdoruesi shkruan detajet e pronës
-3. AI gjeneron përshkrimin profesional
-4. Përdoruesi e ruan rezultatin
-5. Drafti i ruajtur shfaqet në listën e pronave
+1. Përdoruesi kyçet në sistem.
+2. Përdoruesi vendos detajet e pronës ose përdor shembullin demo.
+3. Zgjedh tonin e përshkrimit.
+4. AI gjeneron tekst profesional në shqip.
+5. Përdoruesi kopjon ose eksporton rezultatin si `.txt`.
+6. Përdoruesi e ruan draftin në arkiv.
+7. Drafti i ruajtur shfaqet në arkiv, mund të kërkohet, të përdoret përsëri dhe të fshihet me konfirmim.
 
-## Plani i prezantimit (5 deri në 7 minuta)
+## Plani i prezantimit
 
 ### 0:00 - 0:45 | Hyrja
 
-- E prezantoj projektin si një ndihmës AI për krijimin e përshkrimeve të pronave
-- Shpjegoj kujt i shërben
-- Përmend problemin kryesor: nevoja për përshkrime të shpejta, profesionale dhe të qëndrueshme
+- Prezantoj projektin si ndihmës AI për krijimin e përshkrimeve të pronave.
+- Shpjegoj se projekti është i dobishëm për agjentë dhe agjenci të vogla.
+- Theksoj problemin: përshkrimet profesionale kërkojnë kohë, sidomos kur duhet të shkruhen për shumë prona.
 
-### 0:45 - 3:15 | Flow kryesor live
+### 0:45 - 3:30 | Rrjedha kryesore live
 
-- E hap faqen e login-it
-- Kyçem me një llogari demo të përgatitur më herët
-- E tregoj dashboard-in dhe i përmend shkurt pjesët kryesore
-- Vendos një shembull të përgatitur të pronës
-- Klikoj generate description
-- Lexoj 2 ose 3 fjali të forta nga rezultati
-- E ruaj pronën
-- E tregoj që drafti i ruajtur shfaqet në archive
+- Hap faqen e kyçjes.
+- Kyçem me llogarinë demo.
+- Tregoj panelin kryesor dhe statistikat e shkurtra.
+- Klikoj `Përdor shembullin demo`.
+- Zgjedh tonin, për shembull `Luksoz` ose `Profesional`.
+- Klikoj `Gjenero përshkrimin`.
+- Lexoj disa fjali nga rezultati.
+- Klikoj `Kopjo tekstin` për të treguar përdorim praktik.
+- Klikoj `Eksporto .txt` për të treguar se përshkrimi mund të shkarkohet.
+- Klikoj `Ruaj pronën`.
+- Shfaq arkivin dhe përdor kërkimin për ta gjetur draftin e ruajtur.
+- Klikoj `Përdor` për ta kthyer draftin në editor.
+- Klikoj `Fshij` dhe tregoj konfirmimin para fshirjes.
+- Klikoj `Pastro` për të nisur një përshkrim të ri.
 
-### 3:15 - 4:45 | Shpjegimi i shkurtë teknik
+### 3:30 - 5:00 | Shpjegimi teknik
 
-- Frontend-i është ndërtuar me Next.js App Router dhe React
-- Autentikimi dhe ruajtja e pronave bëhen me Supabase
-- Aplikacioni dërgon prompt-in e përdoruesit te një API route në backend
-- API route lidhet me Groq dhe kthen përshkrimin e gjeneruar
-- UI përfshin validim, loading states, mbrojtje nga duplicate saves dhe error handling bazik
+- Frontend-i është ndërtuar me Next.js App Router dhe React.
+- Autentikimi dhe ruajtja e pronave bëhen me Supabase.
+- API route `/api/chat` validon input-in dhe e dërgon kërkesën te Groq.
+- Prompt-i i sistemit kërkon përgjigje në shqip standard dhe pa shpikje faktesh.
+- UI përfshin loading states, error handling, mbrojtje nga ruajtjet e dyfishta, kopjim të tekstit, eksportim `.txt`, pastrim të formularit, kërkim në arkiv, ripërdorim të draftit dhe fshirje me konfirmim.
 
-### 4:45 - 5:30 | Vlera e projektit
+### 5:00 - 6:00 | Vlera e projektit
 
-- Shpjegoj pse është i dobishëm në praktikë
-- Theksoj që ua shpejton punën agjentëve në krijimin e listimeve
-- Përmend që dizajni është përditësuar për t’u dukur më profesional dhe më i gatshëm për prezantim
+- Projekti e shpejton përgatitjen e listimeve.
+- Teksti i gjeneruar është më profesional sesa një përshkrim i shkruar shpejt.
+- Arkivi e bën aplikacionin më të dobishëm, sepse përdoruesi nuk e humb punën e gjeneruar.
+- Zgjedhja e tonit e bën produktin më fleksibil për prona të ndryshme.
 
-### 5:30 - 6:30 | Hapësirë për pyetje
+### 6:00 - 7:00 | Pyetje
 
-- Lë pak kohë për pyetje nga profesori ose asistentët
-- Jam gati të shpjegoj pse janë zgjedhur Next.js dhe Supabase
+- Jam gati të shpjegoj pse janë zgjedhur Next.js, Supabase dhe Groq.
+- Jam gati të tregoj si ruhet një pronë dhe si lidhet frontend-i me backend-in.
 
-## Flow-i kryesor që do ta demonstroj
+## Shembulli i rekomanduar për demo
 
-Për demo duhet të përdoret një input i përgatitur paraprakisht që rrjedha të jetë e shpejtë dhe e sigurt.
+```text
+Penthouse modern në Prishtinë, 214 m2, 3 dhoma gjumi, 2 banjo, dritare panoramike, terasë private, kuzhinë premium, parking për 2 vetura, afër qendrës, çmimi 420,000 EUR.
+```
 
-**Prompt i rekomanduar për demo:**
+Ky shembull është i përshtatshëm sepse:
 
-> Modern duplex penthouse in Prishtina, 214m2, 3 bedrooms, 2 bathrooms, floor-to-ceiling windows, private terrace, premium kitchen, parking for 2 cars, near city center, asking price 420,000 EUR.
+- Përmban lokacionin, sipërfaqen, çmimin dhe veçoritë kryesore.
+- Tregon qartë vlerën e AI-së.
+- Jep rezultat të mirë për ton profesional ose luksoz.
+- E mban prezantimin të shpejtë dhe të sigurt.
 
-Pse ky flow është më i miri:
+## Çfarë është avancuar në projekt
 
-- Tregon menjëherë vlerën kryesore të produktit
-- Demonstron si AI generation ashtu edhe ruajtjen e të dhënave
-- Nuk humb kohë me raste anësore gjatë prezantimit live
+- Ndërfaqja kryesore është kthyer në shqip.
+- Është shtuar zgjedhja e tonit të përshkrimit.
+- Është shtuar shembulli demo me një klikim.
+- Është shtuar kontrolli i input-it para gjenerimit.
+- Është shtuar kopjimi i tekstit të gjeneruar.
+- Është shtuar eksportimi i përshkrimit si `.txt`.
+- Është shtuar kërkimi në arkivin e pronave.
+- Është shtuar fshirja e pronave nga arkivi.
+- Është shtuar konfirmimi para fshirjes.
+- Është shtuar butoni `Pastro`.
+- Është shtuar butoni `Përdor` për ta kthyer një draft nga arkivi në editor.
+- API tani kthen mesazhe gabimi më të qarta.
+- Prompt-i i AI-së kërkon shqip standard dhe tekst pa gabime drejtshkrimore.
 
-## Pjesët teknike që do t’i shpjegoj shkurt
+## Kontrolli para prezantimit
 
-- **Autentikimi:** Supabase menaxhon user sessions dhe qasjen në workspace privat.
-- **Ruajtja e të dhënave:** pronat e ruajtura ruhen në Supabase dhe ngarkohen sipas përdoruesit.
-- **Integrimi me AI:** route-i `/api/chat` e dërgon prompt-in te Groq dhe kthen përshkrimin e gjeneruar.
-- **UX handling:** aplikacioni kontrollon input-in bosh, input-in shumë të gjatë, duplicate saves dhe shfaq loading ose error feedback.
-- **Frontend design:** homepage, login dhe signup janë ridizajnuar për një pamje më moderne dhe më prezantuese.
+- Aplikacioni hapet pa gabime.
+- Environment variables janë në `.env.local`.
+- Login funksionon me llogarinë demo.
+- Gjenerimi me AI funksionon me shembullin e përgatitur.
+- Ruajtja e pronës funksionon.
+- Arkivi shfaq pronat e ruajtura.
+- Kërkimi në arkiv funksionon.
+- Eksportimi `.txt` funksionon.
+- Fshirja e pronës nga arkivi funksionon.
+- Konfirmimi para fshirjes shfaqet.
+- Butoni `Pastro` funksionon.
+- Butoni `Përdor` në arkiv funksionon.
+- README është përditësuar.
+- Live URL është testuar para prezantimit.
 
-## Çfarë kam kontrolluar para demos
+## Plani B nëse demoja live dështon
 
-- Aplikacioni hapet pa gabime
-- Environment variables janë në `.env.local`
-- Login funksionon me llogarinë demo
-- AI generation funksionon me prompt-in e përgatitur
-- Save property funksionon dhe archive ngarkohet saktë
-- Lidhja me internet është stabile
-- Browser tab është hapur para prezantimit
-- README është përditësuar
-- Ndryshimet e fundit janë commit dhe push
-- Live URL është testuar para klasës
-
-## Plani B nëse live demo dështon
-
-Nëse dështon versioni live ose interneti:
-
-1. E hap aplikacionin lokalisht me environment variables të gatshme
-2. E përdor të njëjtën llogari demo dhe të njëjtin prompt
-3. Nëse dështon AI generation, e shpjegoj flow-in e synuar dhe tregoj pjesën e save/archive
-4. Mbaj screenshots ose një screen recording të shkurtë si backup
+1. Hap aplikacionin lokalisht me environment variables të gatshme.
+2. Përdor të njëjtën llogari demo dhe të njëjtin shembull.
+3. Nëse dështon gjenerimi me AI, shpjegoj rrjedhën dhe tregoj arkivin.
+4. Mbaj disa screenshots ose një screen recording të shkurtër si rezervë.
 
 ## Checklist për dorëzim
 
-- `docs/demo-plan.md` është krijuar
-- `README.md` është përditësuar
-- Live URL duhet të verifikohet dhe të shtohet para prezantimit final
-- Commit-i final duhet të krijohet
-- Ndryshimet duhet të shtyhen në GitHub
+- `docs/demo-plan.md` është i rregulluar në shqip.
+- `README.md` është përditësuar.
+- Ndërfaqja është më e avancuar dhe më e përshtatshme për prezantim.
+- Projekti duhet të testohet lokalisht para dorëzimit final.

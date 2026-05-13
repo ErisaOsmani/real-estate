@@ -1,44 +1,44 @@
 # Real Estate AI
 
-Real Estate AI is a Next.js web app that helps real estate agents and small property teams generate polished property descriptions with AI, save them to their account, and manage listing drafts in one place.
+Real Estate AI është aplikacion web me Next.js që ndihmon agjentët e patundshmërive të gjenerojnë përshkrime profesionale të pronave në shqip, t'i ruajnë draftet dhe t'i menaxhojnë në një arkiv privat.
 
-## What the app does
+## Çfarë bën aplikacioni
 
-- Authenticated users can sign up, log in, and access a private workspace.
-- Users can enter property details and generate a professional listing description with AI.
-- Generated descriptions can be saved to Supabase and reviewed later in the personal archive.
-- The app prevents duplicate saves and shows helpful loading, success, and error states.
+- Përdoruesit mund të regjistrohen, të kyçen dhe të kenë hapësirë private pune.
+- Përdoruesi shkruan detajet e pronës ose përdor shembullin demo.
+- Mund të zgjidhet toni i përshkrimit: profesional, luksoz, familjar ose i shkurtër.
+- AI gjeneron përshkrim të pastër në shqip.
+- Rezultati mund të kopjohet dhe të ruhet në Supabase.
+- Rezultati mund të eksportohet si file `.txt`.
+- Formulari mund të pastrohet shpejt për të nisur një përshkrim të ri.
+- Arkivi shfaq pronat e ruajtura, lejon kërkim të shpejtë, ripërdorim dhe fshirje të draftit.
+- Aplikacioni kontrollon input-in, shfaq gjendje loading, sukses dhe gabime të qarta.
 
-## Who it is for
+## Kujt i shërben
 
-This project is designed for:
+Ky projekt është i përshtatshëm për:
 
-- Real estate agents
-- Property marketers
-- Small agencies that want faster listing creation
+- Agjentë të patundshmërive.
+- Marketerë të pronave.
+- Agjenci të vogla që duan përshkrime më të shpejta dhe më profesionale.
 
-## Tech stack
+## Teknologjitë
 
-- Next.js 16 with App Router
+- Next.js 16 me App Router
 - React 19
 - Tailwind CSS 4
-- Supabase Auth and Database
-- Groq API for AI text generation
+- Supabase Auth dhe Database
+- Groq API për gjenerim të tekstit me AI
 
-## Live URL
+## Konfigurimi lokal
 
-- Production URL: add your verified deployment URL here before the final presentation
-- Local verification: project linted successfully on April 26, 2026
-
-## Local setup
-
-1. Install dependencies:
+1. Instalo varësitë:
 
 ```bash
 npm install
 ```
 
-2. Create a `.env.local` file with the required keys:
+2. Krijo `.env.local` me çelësat e nevojshëm:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
@@ -46,35 +46,42 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 GROQ_API_KEY=your_groq_api_key
 ```
 
-3. Start the development server:
+3. Starto serverin lokal:
 
 ```bash
 npm run dev
 ```
 
-4. Open `http://localhost:3000`
+4. Hape aplikacionin në:
 
-## Demo-ready flow
+```text
+http://localhost:3000
+```
 
-The strongest flow for the presentation is:
+## Rrjedha e demos
 
-1. Log in with an existing account.
-2. Enter a realistic property prompt.
-3. Generate the AI listing description.
-4. Save the result to the property archive.
-5. Show that the saved draft appears in the dashboard.
+1. Kyçu me llogarinë demo.
+2. Kliko `Përdor shembullin demo`.
+3. Zgjidh tonin e përshkrimit.
+4. Kliko `Gjenero përshkrimin`.
+5. Kopjo tekstin ose eksportoje si `.txt`.
+6. Ruaje pronën në arkiv.
+7. Shfaq pronën në arkiv, përdor kërkimin, ktheje draftin në editor ose fshije me konfirmim.
 
-For the full presentation script, see [docs/demo-plan.md](docs/demo-plan.md).
+Plani i plotë i prezantimit është te [docs/demo-plan.md](docs/demo-plan.md).
 
-## Readiness checklist
+## Statusi i projektit
 
-- UI refreshed for homepage, login, and signup
-- Auth flow connected with Supabase
-- AI generation route connected with Groq
-- Property saving flow connected with Supabase
-- Lint passing locally
-- Demo plan prepared
+- UI është përditësuar dhe është në shqip.
+- API route ka validim më të mirë.
+- Gjenerimi me AI është lidhur me Groq.
+- Autentikimi dhe ruajtja e pronave janë lidhur me Supabase.
+- Arkivi ka kërkim dhe fshirje të pronave.
+- Përshkrimi i gjeneruar mund të eksportohet si `.txt`.
+- Draftet e arkivit mund të përdoren përsëri në editor.
+- Fshirja kërkon konfirmim para se të kryhet.
+- Projekti është gati për testim lokal dhe prezantim.
 
-## Author
+## Autorja
 
 Erisa Osmani

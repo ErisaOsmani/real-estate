@@ -1,5 +1,7 @@
 import { supabase } from "@/lib/supabase"
 
+export type ListingTone = "Profesional" | "Luksoz" | "I shkurtër" | "Familjar"
+
 export interface Property {
   id: string
   user_id: string
@@ -11,19 +13,22 @@ interface GeneratePropertyResponse {
   reply: string
 }
 
-export const generateProperty = async (input: string): Promise<GeneratePropertyResponse> => {
+export const generateProperty = async (
+  input: string,
+  tone: ListingTone
+): Promise<GeneratePropertyResponse> => {
   const res = await fetch("/api/chat", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ message: input }),
+    body: JSON.stringify({ message: input, tone }),
   })
 
   const data = await res.json().catch(() => null)
 
   if (!res.ok) {
-    throw new Error(data?.error || "AI service failed")
+    throw new Error(data?.error || "Shërbimi AI dështoi.")
   }
 
   return data
@@ -59,6 +64,24 @@ export const createProperty = async ({
       description,
     },
   ])
+
+  if (error) {
+    throw new Error(error.message)
+  }
+}
+
+export const deleteProperty = async ({
+  propertyId,
+  userId,
+}: {
+  propertyId: string
+  userId: string
+}) => {
+  const { error } = await supabase
+    .from("properties")
+    .delete()
+    .eq("id", propertyId)
+    .eq("user_id", userId)
 
   if (error) {
     throw new Error(error.message)

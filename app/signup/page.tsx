@@ -18,17 +18,17 @@ export default function Signup() {
     setSuccess("")
 
     if (!email.includes("@")) {
-      setError("Please enter a valid email address")
+      setError("Shkruaj një email të vlefshëm.")
       return
     }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters")
+      setError("Fjalëkalimi duhet të ketë së paku 6 karaktere.")
       return
     }
 
     if (!name) {
-      setError("Please enter your name")
+      setError("Shkruaj emrin tënd.")
       return
     }
 
@@ -45,39 +45,33 @@ export default function Signup() {
     })
 
     if (error) {
-      setError(error.message || "Could not create account. Please try again.")
+      setError(error.message || "Nuk mundëm ta krijojmë llogarinë. Provo përsëri.")
     } else {
-      setSuccess("Account created successfully! Check your email to confirm.")
+      setSuccess("Llogaria u krijua me sukses. Kontrollo email-in për konfirmim.")
     }
 
     setLoading(false)
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[-8%] top-10 h-72 w-72 rounded-full bg-amber-300/14 blur-3xl" />
-        <div className="absolute right-[-10%] top-24 h-96 w-96 rounded-full bg-fuchsia-300/10 blur-3xl" />
-        <div className="absolute bottom-[-8%] left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-emerald-300/10 blur-3xl" />
-      </div>
-
+    <main className="min-h-screen overflow-hidden">
       <section className="relative mx-auto grid min-h-screen max-w-7xl gap-8 px-4 py-6 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-8 lg:py-8">
         <div className="order-2 flex items-center lg:order-1">
           <div className="w-full rounded-[2rem] border border-white/10 bg-white/[0.075] p-6 backdrop-blur-xl sm:p-8">
             <p className="text-sm uppercase tracking-[0.32em] text-white/45">
-              Signup
+              Regjistrimi
             </p>
             <h1 className="font-display mt-3 text-4xl text-white sm:text-5xl">
-              Create your studio account
+              Krijo llogarinë e studios
             </h1>
             <p className="mt-3 text-sm leading-6 text-white/58">
-              Start building elegant, conversion-focused property copy with your own saved workspace.
+              Fillo të krijosh përshkrime profesionale të pronave dhe ruaji në hapësirën tënde private.
             </p>
 
             <div className="mt-8 space-y-5">
               <TextInput
-                label="Full name"
-                placeholder="Your full name"
+                label="Emri i plotë"
+                placeholder="Emri dhe mbiemri"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 disabled={loading}
@@ -87,7 +81,7 @@ export default function Signup() {
               <TextInput
                 label="Email"
                 type="email"
-                placeholder="name@agency.com"
+                placeholder="emri@agjencia.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
@@ -95,14 +89,14 @@ export default function Signup() {
               />
 
               <TextInput
-                label="Password"
+                label="Fjalëkalimi"
                 type="password"
-                placeholder="Minimum 6 characters"
+                placeholder="Minimumi 6 karaktere"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
                 autoComplete="new-password"
-                hint="Use a password you can remember easily and keep secure."
+                hint="Përdor një fjalëkalim të sigurt dhe të lehtë për t'u mbajtur mend."
               />
             </div>
 
@@ -111,7 +105,7 @@ export default function Signup() {
               disabled={loading}
               className="mt-8 w-full rounded-full bg-amber-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-200 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loading ? "Creating account..." : "Create Account"}
+              {loading ? "Duke krijuar llogarinë..." : "Krijo llogari"}
             </button>
 
             {error && (
@@ -127,9 +121,9 @@ export default function Signup() {
             )}
 
             <p className="mt-6 text-center text-sm text-white/52">
-              Already have an account?{" "}
+              Ke llogari?{" "}
               <Link href="/login" className="text-amber-200 transition hover:text-amber-100">
-                Login
+                Kyçu
               </Link>
             </p>
           </div>
@@ -138,36 +132,36 @@ export default function Signup() {
         <div className="order-1 flex flex-col justify-between rounded-[2rem] border border-white/10 bg-stone-950/35 p-6 backdrop-blur-xl sm:p-8 lg:order-2">
           <div>
             <p className="text-xs uppercase tracking-[0.32em] text-amber-200/80">
-              PRIVATE WORKSPACE
+              HAPËSIRË PRIVATE
             </p>
             <h2 className="font-display mt-5 text-5xl leading-[0.95] text-white sm:text-6xl">
-              Build a sharper first impression for every listing.
+              Krijo përshtypje më të fortë për çdo pronë.
             </h2>
             <p className="mt-5 max-w-xl text-base leading-7 text-white/62">
-              Join a cleaner workflow for agents, marketers, and real estate teams who want faster output without losing a premium tone.
+              Një rrjedhë më e pastër pune për agjentë, marketerë dhe ekipe që duan tekst më të shpejtë pa humbur tonin profesional.
             </p>
           </div>
 
           <div className="mt-10 space-y-4">
             <div className="rounded-[1.5rem] border border-white/8 bg-white/[0.05] p-5">
               <p className="text-xs uppercase tracking-[0.24em] text-white/42">01</p>
-              <h3 className="mt-3 text-xl text-white">Describe the property</h3>
+              <h3 className="mt-3 text-xl text-white">Përshkruaj pronën</h3>
               <p className="mt-2 text-sm leading-6 text-white/55">
-                Add the essentials like size, location, pricing, finishes, and standout amenities.
+                Shto sipërfaqen, lokacionin, çmimin, përfundimet dhe veçoritë kryesore.
               </p>
             </div>
             <div className="rounded-[1.5rem] border border-white/8 bg-white/[0.05] p-5">
               <p className="text-xs uppercase tracking-[0.24em] text-white/42">02</p>
-              <h3 className="mt-3 text-xl text-white">Generate the sales narrative</h3>
+              <h3 className="mt-3 text-xl text-white">Gjenero tekstin prezantues</h3>
               <p className="mt-2 text-sm leading-6 text-white/55">
-                Let AI turn rough notes into persuasive copy that sounds deliberate and polished.
+                AI i kthen shënimet e thjeshta në përshkrim të qartë, bindës dhe profesional.
               </p>
             </div>
             <div className="rounded-[1.5rem] border border-white/8 bg-white/[0.05] p-5">
               <p className="text-xs uppercase tracking-[0.24em] text-white/42">03</p>
-              <h3 className="mt-3 text-xl text-white">Save and reuse your best work</h3>
+              <h3 className="mt-3 text-xl text-white">Ruaj dhe ripërdor draftet</h3>
               <p className="mt-2 text-sm leading-6 text-white/55">
-                Keep a growing archive of descriptions ready for future campaigns and clients.
+                Mbaj një arkiv me përshkrime të gatshme për klientë dhe kampanja të ardhshme.
               </p>
             </div>
           </div>
